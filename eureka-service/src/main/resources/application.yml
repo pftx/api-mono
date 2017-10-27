@@ -1,0 +1,15 @@
+server:
+  port: 8022
+
+management:
+  context-path: /monitor
+
+eureka:
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+  server:
+    waitTimeInMsWhenSyncEmpty: 0
+  instance:
+    preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10

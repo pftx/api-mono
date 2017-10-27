@@ -1,0 +1,27 @@
+server:
+  port: 8011
+
+management:
+  context-path: /monitor
+
+logging:
+  level:
+    com.netflix.discovery: 'OFF'
+    org.springframework.cloud: 'DEBUG'
+
+eureka:
+  instance:
+    preferIpAddress: true
+    statusPageUrlPath: /monitor/info
+    healthCheckUrlPath: /monitor/health
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8022}/eureka/
+
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/pftx/api-mono/config-repo
+          basedir: target/config
