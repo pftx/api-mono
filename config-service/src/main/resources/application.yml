@@ -25,5 +25,5 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/pftx/api-mono.git
+          uri: https://github.com/pftx/config-repo.git
           basedir: target/config
