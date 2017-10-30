@@ -9,21 +9,13 @@
 		<relativePath>../</relativePath>
 	</parent>
 
-	<artifactId>common</artifactId>
-	<packaging>jar</packaging>
+	<artifactId>auth</artifactId>
+	<packaging>pom</packaging>
+	<name>auth</name>
 
-	<name>common</name>
-	<description>Common utilities</description>
-
-	<dependencies>
-		<dependency>
-			<groupId>io.github.pftx</groupId>
-			<artifactId>commons-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>auth-api</module>
+		<module>auth-service</module>
+	</modules>
 
 </project>

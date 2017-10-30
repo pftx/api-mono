@@ -1,8 +1,13 @@
 server:
-  port: 8011
+  port: 8033
 
 management:
   context-path: /monitor
+  security:
+    enabled: false
+
+security:
+    sessions: stateless
 
 logging:
   level:
@@ -20,10 +25,14 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8022}/eureka/
 
+token:
+  accessTokenValiditySeconds: 7200
+  refreshTokenValiditySeconds: 72000
+
+# JDBC config.
 spring:
-  cloud:
-    config:
-      server:
-        git:
-          uri: https://github.com/pftx/api-mono.git
-          basedir: target/config
+  datasource:
+    url: jdbc:mysql://localhost/auth?verifyServerCertificate=false&useSSL=false
+    username: dl_auth
+    password: I9dj@
+    driver-class-name: com.mysql.jdbc.Driver
