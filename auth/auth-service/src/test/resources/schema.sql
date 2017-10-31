@@ -9,18 +9,19 @@ create table users (
   username VARCHAR(50) NOT NULL UNIQUE KEY,
   password VARCHAR(128) NOT NULL,
   email VARCHAR(128) NOT NULL,
-  status TINYINT not null default 1,
-  locked BOOLEAN NOT NULL default false,
-  expired BOOLEAN NOT NULL default false,
+  ssid VARCHAR(50),
+  status TINYINT NOT NULL DEFAULT 1,
+  locked BOOLEAN NOT NULL DEFAULT false,
+  expired BOOLEAN NOT NULL DEFAULT false,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp of initial creation.',
   password_modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp of password update.',
   modified TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 );
 
 create table authorities (
-  username VARCHAR(50) not null,
-  authority VARCHAR(50) not null,
-  status TINYINT not null default 1,
+  username VARCHAR(50) NOT NULL,
+  authority VARCHAR(50) NOT NULL,
+  status TINYINT NOT NULL DEFAULT 1,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp of initial creation.',
   modified TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   constraint fk_authorities_users foreign key(username) references users(username),
@@ -28,19 +29,41 @@ create table authorities (
 );
 
 create table permissions (
-  permission VARCHAR(50) not null PRIMARY KEY,
-  display_name VARCHAR(150) not null,
+  permission VARCHAR(50) NOT NULL PRIMARY KEY,
+  display_name VARCHAR(150) NOT NULL,
   description VARCHAR(255),
-  status TINYINT not null default 1,
+  status TINYINT NOT NULL DEFAULT 1,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp of initial creation.',
   modified TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 );
 
 create table authority_permissions (
-  authority VARCHAR(50) not null,
-  permission VARCHAR(50) not null,
+  authority VARCHAR(50) NOT NULL,
+  permission VARCHAR(50) NOT NULL,
   constraint fk_authority_permissions_perm foreign key(permission) references permissions(permission),
   constraint PRIMARY KEY pk_auth_perm(authority, permission)
+);
+
+create table account (
+  account_id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(127) NOT NULL UNIQUE KEY,
+  description VARCHAR(255),
+  status TINYINT NOT NULL DEFAULT 1,
+  type TINYINT NOT NULL DEFAULT 0,
+  account_balance BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'In micros',
+  currency_code CHAR(3) NOT NULL DEFAULT 'CNY',
+  timezone VARCHAR(32) NOT NULL DEFAULT 'Asia/Chengdu',
+  created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp of initial creation.',
+  modified TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+);
+
+create table user_account (
+  user_id INT NOT NULL,
+  account_id INT NOT NULL,
+  last_login TIMESTAMP,
+  constraint fk_user_account_user foreign key(user_id) references users(user_id),
+  constraint fk_user_account_account foreign key(account_id) references account(account_id),
+  constraint PRIMARY KEY pk_user_account(user_id, account_id)
 );
 
 -- create oauth2 table

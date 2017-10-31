@@ -22,6 +22,15 @@ VALUES
     ('account_write','ROLE_USER'),
     ('account_read','ROLE_USER');
     
+INSERT INTO `account` (`account_id`, `name`, `type`, `account_balance`)
+VALUES
+    (1,'Demo Account',2,54321),
+    (2,'Root Account',1,100);
+    
+INSERT INTO `user_account` (`user_id`, `account_id`, `last_login`)
+VALUES
+    (1,1,null),(1,2,NOW());
+    
 INSERT INTO `oauth_client_details` (`client_id`, `resource_ids`, `client_secret`, `scope`, `authorized_grant_types`, `web_server_redirect_uri`, `authorities`, `access_token_validity`, `refresh_token_validity`, `additional_information`, `autoapprove`)
 VALUES
     ('client',NULL,'nice-to-have','web,app','password,authorization_code,refresh_token',NULL,NULL,NULL,NULL,NULL,NULL);

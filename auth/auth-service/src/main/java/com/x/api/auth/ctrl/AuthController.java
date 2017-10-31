@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.x.api.auth.dto.AccountInfo;
 import com.x.api.auth.dto.XTokenPrincipal;
+import com.x.api.auth.service.AuthService;
 import com.x.api.auth.util.TokenUtil;
 
 /**
@@ -52,6 +53,9 @@ public class AuthController {
 
     @Autowired
     private TokenStore tokenStore;
+
+    @Autowired
+    private AuthService authService;
 
     @RequestMapping("/hi")
     public String hi() {
@@ -82,6 +86,7 @@ public class AuthController {
             if (ai.getAccountId().equals(opAccountId)) {
                 Long oldOpAccountId = info.getOpAccountId();
                 info.setOpAccountId(opAccountId);
+                authService.updateLastLogin(info);
                 tokenStore.storeAccessToken(accessToken, authentication);
                 logger.info("/oauth/ext/switch_account, user: {} switched the operating account from {} to {}.",
                         principal.getName(), oldOpAccountId, opAccountId);

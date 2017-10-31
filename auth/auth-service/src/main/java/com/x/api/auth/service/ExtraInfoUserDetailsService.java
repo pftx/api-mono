@@ -17,15 +17,21 @@
  */
 package com.x.api.auth.service;
 
+import java.util.Collections;
 import java.util.List;
 
+import org.apache.niolex.commons.collection.CollectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import com.x.api.auth.dto.AccountInfo;
 import com.x.api.auth.dto.XInfoUser;
 import com.x.api.auth.dto.XTokenPrincipal;
 import com.x.api.common.enums.Status;
@@ -42,6 +48,11 @@ public class ExtraInfoUserDetailsService implements UserDetailsService {
             "SELECT user_id, username, password, email, status, locked, expired, password_modified FROM users WHERE username = ?";
     private static final String SELECT_AUTHORITIES =
             "SELECT authority FROM authorities WHERE username = ? AND status = 1";
+    private static final String SELECT_PERMISSIONS =
+            "SELECT permission FROM permissions JOIN authority_permissions USING (permission) WHERE authority IN (:authorities) AND status = 1";
+    private static final String SELECT_ACCOUNTS =
+            "SELECT account_id, name FROM account JOIN user_account USING (account_id) WHERE user_id = ? AND status = 1 "
+                    + "ORDER BY last_login DESC";
 
     private static final RowMapper<XInfoUser> BASIC_INFO_MAPPER = (rs, rowNum) -> {
         XTokenPrincipal ext = new XTokenPrincipal();
@@ -57,7 +68,13 @@ public class ExtraInfoUserDetailsService implements UserDetailsService {
                 ext);
     };
 
+    private static final RowMapper<AccountInfo> ACCOUNT_INFO_MAPPER = (rs, rowNum) -> {
+        return new AccountInfo(rs.getLong("account_id"), rs.getString("name"));
+    };
+
     private JdbcTemplate jdbcTemplate;
+
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     /**
      * This is the override of super method.
@@ -66,11 +83,31 @@ public class ExtraInfoUserDetailsService implements UserDetailsService {
     @Override
     public XInfoUser loadUserByUsername(String username) throws UsernameNotFoundException {
         logger.debug("Start to load user: {}.", username);
-        
-        XInfoUser user = jdbcTemplate.queryForObject(SELECT_USER, BASIC_INFO_MAPPER, username);
-        List<String> authorities = jdbcTemplate.queryForList(SELECT_AUTHORITIES, String.class, username);
-        user.setAuthorities(authorities);
-        return user;
+        try {
+            XInfoUser user = jdbcTemplate.queryForObject(SELECT_USER, BASIC_INFO_MAPPER, username);
+            List<String> authorities = jdbcTemplate.queryForList(SELECT_AUTHORITIES, String.class, username);
+            user.setAuthorities(authorities);
+
+            XTokenPrincipal extension = user.getExtension();
+            if (!CollectionUtil.isEmpty(authorities)) {
+                List<String> permissions =
+                        namedParameterJdbcTemplate.query(SELECT_PERMISSIONS,
+                                Collections.singletonMap("authorities", authorities),
+                                new SingleColumnRowMapper<String>(String.class));
+                extension.setPermissionList(permissions);
+            }
+
+            List<AccountInfo> accountList = jdbcTemplate.query(SELECT_ACCOUNTS, ACCOUNT_INFO_MAPPER, user.getExtension().getUserId());
+            extension.setAccountList(accountList);
+
+            if (!CollectionUtil.isEmpty(accountList)) {
+                extension.setOpAccountId(accountList.get(0).getAccountId());
+            }
+
+            return user;
+        } catch (DataAccessException dae) {
+            throw new UsernameNotFoundException("User " + username + " not found.", dae);
+        }
     }
 
     /**
@@ -85,6 +122,7 @@ public class ExtraInfoUserDetailsService implements UserDetailsService {
      */
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+        this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate.getDataSource());
     }
 
 }
