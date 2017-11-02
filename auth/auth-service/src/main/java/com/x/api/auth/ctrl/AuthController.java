@@ -36,6 +36,10 @@ import com.x.api.auth.dto.AccountInfo;
 import com.x.api.auth.dto.XTokenPrincipal;
 import com.x.api.auth.service.AuthService;
 import com.x.api.auth.util.TokenUtil;
+import com.x.api.common.dto.GenericResponse;
+import com.x.api.common.exception.BadRequestException;
+
+import io.swagger.annotations.ApiOperation;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
@@ -43,7 +47,7 @@ import com.x.api.auth.util.TokenUtil;
  * @since Oct 27, 2017
  */
 @RestController
-@RequestMapping("/oauth")
+@RequestMapping(value = "/oauth", method = {RequestMethod.GET, RequestMethod.POST})
 public class AuthController {
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
@@ -57,30 +61,34 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @RequestMapping("/hi")
-    public String hi() {
-        return "Hello " + message;
+    @RequestMapping(value = "/hi", method = RequestMethod.GET)
+    @ApiOperation(value = "Test the configuration profile.", httpMethod = "GET", produces = "application/json")
+    public GenericResponse hi() {
+        return new GenericResponse("Hello " + message);
     }
 
-    @RequestMapping("/ext/user_info")
+    @RequestMapping(value = "/ext/user_info", method = RequestMethod.GET)
+    @ApiOperation(value = "Get the current login user information.", httpMethod = "GET", produces = "application/json")
     public Principal user(Principal user) {
         logger.info("/oauth/ext/user_info, user: {}.", user.getName());
         return user;
     }
 
-    @RequestMapping("/ext/token_info")
+    @RequestMapping(value = "/ext/token_info", method = RequestMethod.GET)
+    @ApiOperation(value = "Get the current token information.", httpMethod = "GET", produces = "application/json")
     public OAuth2AccessToken postAccessToken(Principal principal) {
         return getAccessToken(principal);
     }
 
     @RequestMapping(value = "/ext/switch_account", method = RequestMethod.POST)
+    @ApiOperation(value = "Swith the operating account.", httpMethod = "POST", produces = "application/json")
     public OAuth2AccessToken switchUser(Principal principal, @RequestParam("op_account_id") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
 
         XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
         if (info == null || info.getAccountList() == null) {
-            throw new IllegalStateException("Your token don't support switch_account.");
+            throw new BadRequestException("Your token don't support switch_account.");
         }
         for (AccountInfo ai : info.getAccountList()) {
             if (ai.getAccountId().equals(opAccountId)) {
@@ -94,18 +102,23 @@ public class AuthController {
             }
         }
 
-        throw new IllegalArgumentException("Invalid op_account_id.");
+        throw new BadRequestException("Invalid op_account_id.");
     }
 
     @RequestMapping(value = "/ext/revoke_access_token", method = RequestMethod.POST)
-    public String revokeAccessToken(Principal principal) {
+    @ApiOperation(value = "Revoke the current access token.", httpMethod = "POST", produces = "application/json")
+    public GenericResponse revokeAccessToken(Principal principal) {
         OAuth2AccessToken accessToken = getAccessToken(principal);
         tokenStore.removeAccessToken(accessToken);
-        return "Your access_token: " + accessToken.getValue() + " has been revoked.";
+        String info = "Your access_token: " + accessToken.getValue() + " has been revoked.";
+        GenericResponse resp = new GenericResponse(info);
+        return resp;
     }
 
     @RequestMapping(value = "/ext/revoke_refresh_token", method = RequestMethod.POST)
-    public String revokeRefreshToken(Principal principal) {
+    @ApiOperation(value = "Revoke the current refresh token together with access token.", httpMethod = "POST",
+            produces = "application/json")
+    public GenericResponse revokeRefreshToken(Principal principal) {
         OAuth2AccessToken accessToken = getAccessToken(principal);
         OAuth2RefreshToken refreshToken = accessToken.getRefreshToken();
         tokenStore.removeAccessToken(accessToken);
@@ -114,7 +127,9 @@ public class AuthController {
             tokenStore.removeRefreshToken(refreshToken);
             response += ", and your refresh_token: " + refreshToken.getValue() + " has been revoked too";
         }
-        return response + ".";
+        String info = response + ".";
+        GenericResponse resp = new GenericResponse(info);
+        return resp;
     }
 
     private OAuth2AccessToken getAccessToken(Principal principal) {

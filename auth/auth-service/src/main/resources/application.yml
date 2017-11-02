@@ -8,11 +8,14 @@ management:
 
 security:
     sessions: stateless
+    filter-order: 5
 
 logging:
   level:
     com.netflix.discovery: 'OFF'
     org.springframework.cloud: 'DEBUG'
+  pattern:
+    level: "%X{mdcData} %5p"
 
 eureka:
   instance:

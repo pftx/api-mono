@@ -14,11 +14,16 @@
  */
 package com.x.api.auth.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+
+import com.x.api.auth.custom.CustomAccessDeniedHandler;
+import com.x.api.auth.custom.CustomAuthenticationEntryPoint;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
@@ -27,7 +32,14 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
  */
 @Configuration
 @EnableWebSecurity
+@ComponentScan("com.x.api.common.spring")
 public class ResourceConfig extends ResourceServerConfigurerAdapter {
+
+    @Autowired
+    private CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
 
     /**
      * This is the override of super method.
@@ -35,13 +47,19 @@ public class ResourceConfig extends ResourceServerConfigurerAdapter {
      * @see org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter#configure(org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer)
      */
     @Override
-    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {}
+    public void configure(ResourceServerSecurityConfigurer resources) throws Exception {
+        resources.accessDeniedHandler(accessDeniedHandler).authenticationEntryPoint(authenticationEntryPoint);
+    }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.anonymous().disable()
+        http
                 .csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/v2/api-docs").permitAll()
                 .anyRequest().authenticated();
     }
 

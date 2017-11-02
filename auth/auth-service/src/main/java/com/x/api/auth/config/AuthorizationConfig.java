@@ -35,6 +35,8 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
+import com.x.api.auth.custom.CustomAccessDeniedHandler;
+import com.x.api.auth.custom.CustomAuthenticationEntryPoint;
 import com.x.api.auth.service.ExtraInfoTokenEnhancerService;
 import com.x.api.auth.service.ExtraInfoUserDetailsService;
 
@@ -63,6 +65,12 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    @Autowired
+    private CustomAccessDeniedHandler accessDeniedHandler;
 
     @Value("${token.accessTokenValiditySeconds}")
     private int accessTokenValiditySeconds;
@@ -102,7 +110,8 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
-        oauthServer.checkTokenAccess("permitAll()");
+        oauthServer.checkTokenAccess("permitAll()").accessDeniedHandler(accessDeniedHandler)
+                .authenticationEntryPoint(authenticationEntryPoint);
     }
 
 }

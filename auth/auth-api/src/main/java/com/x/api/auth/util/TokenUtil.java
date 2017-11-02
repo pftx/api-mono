@@ -21,6 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.niolex.commons.compress.JacksonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 
@@ -33,6 +35,7 @@ import com.x.api.auth.dto.XTokenPrincipal;
  */
 public class TokenUtil {
     private static final String EXTRA_INFO_KEY = "extension";
+    private static final Logger logger = LoggerFactory.getLogger(TokenUtil.class);
 
     public static OAuth2AccessToken addExtraInfo(OAuth2AccessToken accessToken, XTokenPrincipal info) {
         DefaultOAuth2AccessToken returnToken = new DefaultOAuth2AccessToken(accessToken);
@@ -57,11 +60,14 @@ public class TokenUtil {
         if (o instanceof XTokenPrincipal) {
             return (XTokenPrincipal) o;
         }
+        if (o == null) {
+            return null;
+        }
         try {
             String s = JacksonUtil.obj2Str(o);
             return JacksonUtil.str2Obj(s, XTokenPrincipal.class);
         } catch (Exception e) { // NOSONAR
-            // Ignore the exception.
+            logger.warn("Invalid token extension: {}.", o);
             return null;
         }
     }
