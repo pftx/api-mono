@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.x.api.auth.dto.XTokenPrincipal;
+import com.x.api.common.xauth.XTokenPrincipal;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>

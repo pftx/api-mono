@@ -32,12 +32,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.x.api.auth.dto.AccountInfo;
-import com.x.api.auth.dto.XTokenPrincipal;
 import com.x.api.auth.service.AuthService;
 import com.x.api.auth.util.TokenUtil;
 import com.x.api.common.dto.GenericResponse;
 import com.x.api.common.exception.BadRequestException;
+import com.x.api.common.xauth.AccountInfo;
+import com.x.api.common.xauth.XTokenPrincipal;
 
 import io.swagger.annotations.ApiOperation;
 

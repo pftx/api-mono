@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.auth.dto;
+package com.x.api.common.xauth;
 
 import java.io.Serializable;
 import java.security.Principal;

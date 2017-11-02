@@ -31,10 +31,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import com.x.api.auth.dto.AccountInfo;
 import com.x.api.auth.dto.XInfoUser;
-import com.x.api.auth.dto.XTokenPrincipal;
 import com.x.api.common.enums.Status;
+import com.x.api.common.xauth.AccountInfo;
+import com.x.api.common.xauth.XTokenPrincipal;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>

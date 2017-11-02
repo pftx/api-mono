@@ -54,4 +54,9 @@ public class GenericResponse {
         this.info = info;
     }
 
+    public GenericResponse(String type, String info) {
+        this.type = type;
+        this.info = info;
+    }
+
 }
