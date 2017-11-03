@@ -38,11 +38,6 @@ public class SecuredXToken extends AbstractAuthenticationToken {
     private final XTokenPrincipal principal;
     private String credential;
 
-    /**
-     * Constructor
-     * 
-     * @param authorities
-     */
     public SecuredXToken(XTokenPrincipal principal, String credential) {
         super(principal.getPermissionList().stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         this.principal = principal;

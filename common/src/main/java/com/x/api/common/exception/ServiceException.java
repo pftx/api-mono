@@ -46,75 +46,35 @@ public abstract class ServiceException extends RuntimeException {
         this(DEFAULT_MSG);
     }
 
-    /**
-     * Constructor
-     * 
-     * @param message
-     */
     public ServiceException(String message) {
         super(message);
         Preconditions.checkNotNull(message);
     }
 
-    /**
-     * Constructor
-     * 
-     * @param message
-     * @param cause
-     */
     public ServiceException(String message, Throwable cause) {
         super(message, cause);
         Preconditions.checkNotNull(message);
     }
 
-    /**
-     * Constructor
-     * 
-     * @param cause
-     */
     public ServiceException(Throwable cause) {
         this(ExceptionUtil.getExceptionMessage(cause), cause);
     }
 
-    /**
-     * Constructor
-     * 
-     * @param extension
-     */
     public ServiceException(Map<String, Object> extension) {
         this();
         this.extension = extension;
     }
 
-    /**
-     * Constructor
-     * 
-     * @param message
-     * @param extension
-     */
     public ServiceException(String message, Map<String, Object> extension) {
         this(message);
         this.extension = extension;
     }
 
-    /**
-     * Constructor
-     * 
-     * @param message
-     * @param cause
-     * @param extension
-     */
     public ServiceException(String message, Throwable cause, Map<String, Object> extension) {
         this(message, cause);
         this.extension = extension;
     }
 
-    /**
-     * Constructor
-     * 
-     * @param cause
-     * @param extension
-     */
     public ServiceException(Throwable cause, Map<String, Object> extension) {
         this(cause);
         this.extension = extension;

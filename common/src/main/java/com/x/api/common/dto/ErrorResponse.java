@@ -44,13 +44,6 @@ public class ErrorResponse extends GenericResponse {
         this.setType(_TYPE);
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param uid
-     * @param status
-     * @param description
-     */
     public ErrorResponse(String uid, int status, String description) {
         this();
         this.uid = uid;
