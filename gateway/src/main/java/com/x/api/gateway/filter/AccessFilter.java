@@ -89,7 +89,7 @@ public class AccessFilter extends ZuulFilter {
 
         String path = request.getRequestURI();
         if (path.startsWith("/oauth")) {
-            log.debug("Skip filter for /oauth endpoints.");
+            log.debug("Skip auth check for /oauth endpoints.");
             return null;
         }
 

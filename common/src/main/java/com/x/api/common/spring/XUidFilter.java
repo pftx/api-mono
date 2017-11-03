@@ -36,7 +36,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * @since Nov 2, 2017
  */
 @Component
-@Order(-1)
+@Order(-10)
 public class XUidFilter extends OncePerRequestFilter {
     public static final String X_UID = "X-Uid";
 
