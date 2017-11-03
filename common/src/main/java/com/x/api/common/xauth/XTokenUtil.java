@@ -18,14 +18,13 @@
 package com.x.api.common.xauth;
 
 import java.util.List;
-import java.util.Random;
 
 import org.apache.niolex.commons.codec.SHAUtil;
+import org.apache.niolex.commons.util.DateTimeUtil;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.x.api.common.xauth.token.SecuredXToken;
-
 
 /**
  * XTokenUtil, encode and decode X-Token.
@@ -49,13 +48,18 @@ public class XTokenUtil {
     public static SecuredXToken decodeToken(String rawToken, String secret) {
         String xToken = plainStr(rawToken);
         List<String> list = Splitter.on(FIELD_SEP).splitToList(xToken);
-        if (list.size() != 6) {
+        if (list.size() != 7) {
             throw new IllegalArgumentException("Invalid X-Token: " + rawToken);
         }
         String enc = SHAUtil.sha1(xToken.substring(0, xToken.lastIndexOf(FIELD_SEP)), secret);
-        String credential = list.get(5);
+        String credential = list.get(6);
         if (!enc.startsWith(credential)) {
             throw new IllegalArgumentException("Bad X-Token: " + rawToken);
+        }
+
+        long startTime = toLong(list.get(5)) << 4;
+        if (System.currentTimeMillis() - startTime > DateTimeUtil.HOUR * 2) {
+            throw new IllegalArgumentException("X-Token expired: " + rawToken);
         }
 
         XTokenPrincipal principal = new XTokenPrincipal();
@@ -70,11 +74,13 @@ public class XTokenUtil {
     public static String encodeToken(SecuredXToken token, String secret) {
         StringBuilder sb = new StringBuilder();
         XTokenPrincipal principal = token.getPrincipal();
+
         sb.append(principal.getUserName()).append(FIELD_SEP);
         sb.append(toStr(principal.getUserId())).append(FIELD_SEP);
         sb.append(toStr(principal.getOpUserId())).append(FIELD_SEP);
         sb.append(toStr(principal.getOpAccountId())).append(FIELD_SEP);
-        sb.append(Joiner.on(ATTRI_SEP).join(principal.getPermissionList()));
+        sb.append(Joiner.on(ATTRI_SEP).join(principal.getPermissionList())).append(FIELD_SEP);
+        sb.append(toStr(System.currentTimeMillis() >> 4));
         String enc = SHAUtil.sha1(sb.toString(), secret).substring(0, 6);
         sb.append(FIELD_SEP).append(enc);
         return secureStr(sb.toString());
@@ -107,23 +113,6 @@ public class XTokenUtil {
             }
         }
         return new String(cs);
-    }
-
-    static char[] generateMap(long seed) {
-        Random generator = new Random(seed);
-        char[] ta = new char[128];
-        for (char c = '+'; c < 127; ++c) {
-            ta[c] = c;
-        }
-
-        int bound = 126 - '+';
-        for (int i = 126, j, k; i > '+'; --i) {
-            j = generator.nextInt(bound--) + '+';
-            k = ta[i - 1];
-            ta[i - 1] = ta[j];
-            ta[j] = (char) k;
-        }
-        return ta;
     }
 
 }

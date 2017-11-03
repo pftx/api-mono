@@ -45,7 +45,7 @@ public class InternalController {
 
     private static final Logger logger = LoggerFactory.getLogger(InternalController.class);
 
-    @Value("${token.authKey}")
+    @Value("${xtoken.authKey}")
     private String authKey;
 
     @RequestMapping(value = "/x-token", method = RequestMethod.GET)

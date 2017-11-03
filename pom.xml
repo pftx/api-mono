@@ -160,5 +160,6 @@
 		<module>eureka-service</module>
 		<module>config-service</module>
 		<module>auth</module>
+		<module>gateway</module>
 	</modules>
 </project>
