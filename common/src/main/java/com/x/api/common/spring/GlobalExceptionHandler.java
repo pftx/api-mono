@@ -28,6 +28,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.x.api.common.dto.ErrorResponse;
+import com.x.api.common.util.Constants;
 import com.x.api.common.util.ExceptionUtil;
 
 /**
@@ -54,7 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             logger.info("--YYY-- {} error occurred - {}, msg = {}.", status, xUid, message);
         }
 
-        headers.add("X-Err-Msg", message);
+        headers.add(Constants.HEADER_X_ERR_MSG, message);
         ErrorResponse body = new ErrorResponse(xUid, status.value(), message);
         return new ResponseEntity<Object>(body, headers, status);
     }

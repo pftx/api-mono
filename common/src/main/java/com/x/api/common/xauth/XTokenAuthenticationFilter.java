@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.x.api.common.util.Constants;
 import com.x.api.common.xauth.token.RawXToken;
 
 /**
@@ -34,7 +35,6 @@ import com.x.api.common.xauth.token.RawXToken;
  * @since Oct 18, 2017
  */
 public class XTokenAuthenticationFilter extends OncePerRequestFilter {
-    public static String HEADER_NAME = "X-Token";
 
     /**
      * This is the override of super method.
@@ -45,7 +45,7 @@ public class XTokenAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        String header = request.getHeader(HEADER_NAME);
+        String header = request.getHeader(Constants.HEADER_X_TOKEN);
         if (header != null) {
             RawXToken x = new RawXToken(header);
             SecurityContextHolder.getContext().setAuthentication(x);

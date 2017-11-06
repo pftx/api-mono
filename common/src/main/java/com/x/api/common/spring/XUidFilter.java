@@ -30,6 +30,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.x.api.common.util.Constants;
+
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
@@ -38,7 +40,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @Order(-10)
 public class XUidFilter extends OncePerRequestFilter {
-    public static final String X_UID = "X-Uid";
+    public static final String X_UID = Constants.HEADER_X_UID;
 
     @Override
     protected void doFilterInternal(

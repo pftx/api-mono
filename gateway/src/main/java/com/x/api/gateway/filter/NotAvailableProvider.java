@@ -28,6 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.x.api.common.dto.ErrorResponse;
 import com.x.api.common.spring.XUidFilter;
+import com.x.api.common.util.Constants;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
@@ -67,6 +68,7 @@ public class NotAvailableProvider implements ZuulFallbackProvider {
             public HttpHeaders getHeaders() {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
+                headers.add(Constants.HEADER_X_ERR_MSG, DEFAULT_MSG);
                 return headers;
             }
 

@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.x.api.common.dto.ErrorResponse;
 import com.x.api.common.spring.XUidFilter;
+import com.x.api.common.util.Constants;
 import com.x.api.common.util.ExceptionUtil;
 
 /**
@@ -55,6 +56,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setStatus(STATUS);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(CharEncoding.UTF_8);
+        response.addHeader(Constants.HEADER_X_ERR_MSG, body.getDescription());
         response.getWriter().write(JacksonUtil.obj2Str(body));
         response.flushBuffer();
     }

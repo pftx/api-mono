@@ -36,7 +36,7 @@ import com.x.api.auth.client.AuthClient;
 import com.x.api.auth.util.TokenUtil;
 import com.x.api.common.dto.ErrorResponse;
 import com.x.api.common.spring.XUidFilter;
-import com.x.api.common.xauth.XTokenAuthenticationFilter;
+import com.x.api.common.util.Constants;
 import com.x.api.common.xauth.XTokenPrincipal;
 import com.x.api.common.xauth.XTokenUtil;
 import com.x.api.common.xauth.token.SecuredXToken;
@@ -50,6 +50,8 @@ import feign.FeignException;
  */
 @Component
 public class AccessFilter extends ZuulFilter {
+    static final String X_IN_TIME = "X-Req-In-Time";
+
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_TYPE_VALUE = "application/json;charset=UTF-8";
     private static final String NO_TOKEN_MSG = "Access token is required to access this resource.";
@@ -84,6 +86,7 @@ public class AccessFilter extends ZuulFilter {
         HttpServletRequest request = ctx.getRequest();
         String xUid = XUidFilter.getXUid();
         ctx.addZuulRequestHeader(XUidFilter.X_UID, xUid);
+        ctx.set(X_IN_TIME, System.currentTimeMillis());
 
         log.info("[{}] -> {}", request.getMethod(), request.getRequestURL().toString());
 
@@ -115,7 +118,7 @@ public class AccessFilter extends ZuulFilter {
             SecuredXToken xToken = new SecuredXToken(extraInfo, "xx-xx-xx");
             String rawToken = XTokenUtil.encodeToken(xToken, authKey);
             log.debug("Encoded x-token => ", rawToken);
-            ctx.addZuulRequestHeader(XTokenAuthenticationFilter.HEADER_NAME, rawToken);
+            ctx.addZuulRequestHeader(Constants.HEADER_X_TOKEN, rawToken);
         } catch (FeignException e) { // NOSONAR.
             int status = e.status() == 400 ? HttpServletResponse.SC_UNAUTHORIZED : e.status();
             log.debug("Failed to get token details: {}", e.getMessage());
