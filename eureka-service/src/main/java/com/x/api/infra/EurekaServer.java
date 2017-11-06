@@ -20,6 +20,7 @@ package com.x.api.infra;
 import org.apache.niolex.commons.codec.StringUtil;
 import org.apache.niolex.commons.file.FileUtil;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
@@ -30,6 +31,8 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
  */
 @EnableEurekaServer
 @SpringBootApplication
+@EnableAutoConfiguration(exclude = {
+        org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
 public class EurekaServer {
 
     public static void main(String[] args) throws Exception {

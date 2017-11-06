@@ -3,6 +3,8 @@ server:
 
 management:
   context-path: /monitor
+  security:
+    enabled: false
 
 eureka:
   client:

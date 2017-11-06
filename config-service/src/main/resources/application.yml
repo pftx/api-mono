@@ -3,6 +3,13 @@ server:
 
 management:
   context-path: /monitor
+  security:
+    enabled: false
+
+security:
+  user:
+    name: application
+    password: 6DuEkv1ohcIV
 
 logging:
   level:
