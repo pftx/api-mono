@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.x.api.common.spring.XUidFilter;
+import com.x.api.common.util.Constants;
 import com.x.api.gateway.bean.AuditBean;
 
 /**
@@ -74,7 +75,8 @@ public class AuditFilter extends ZuulFilter {
         bean.setDuration((int) (System.currentTimeMillis() - inTime));
 
         bean.setStatus(ctx.getResponse().getStatus());
-        bean.setErrorMsg(ctx.getResponse().getHeader("X-Err-Msg"));
+        ctx.getZuulResponseHeaders().stream().filter(p -> p.first().equalsIgnoreCase(Constants.HEADER_X_ERR_MSG))
+                .findFirst().ifPresent(p -> bean.setErrorMsg(p.second()));
         bean.setMethod(ctx.getRequest().getMethod());
         bean.setQueryStr(ctx.getRequest().getQueryString());
 
