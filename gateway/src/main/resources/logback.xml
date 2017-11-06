@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+
+<!-- gateway log configuration file. upgrade to logback -->
+<!-- -->
+<!-- For professional support please see -->
+<!-- http://logback.qos.ch/documentation.html -->
+<!-- http://logback.qos.ch/manual/configuration.html -->
+<!-- http://logback.qos.ch/manual/appenders.html -->
+<!-- -->
+
+<configuration debug="false">
+
+	<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+	<property name="LOG_FILE"
+		value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}}/application.log}" />
+	<include
+		resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<encoder>
+			<pattern>${FILE_LOG_PATTERN}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>WARN</level>
+		</filter>
+		<file>${LOG_FILE}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<minIndex>1</minIndex>
+			<maxIndex>20</maxIndex>
+			<fileNamePattern>${LOG_FILE}.log.%i.gz</fileNamePattern>
+		</rollingPolicy>
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>1000MB</MaxFileSize>
+		</triggeringPolicy>
+	</appender>
+
+	<appender name="AUDIT"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<Append>true</Append>
+		<encoder>
+			<pattern>%m%n</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<file>${LOG_FILE}.audit</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_FILE}.audit.%d{yyyyMMdd}</fileNamePattern>
+		</rollingPolicy>
+	</appender>
+
+	<logger name="com.x.api.gateway.filter.AuditFilter" level="DEBUG">
+		<appender-ref ref="AUDIT" />
+	</logger>
+
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="FILE" />
+	</root>
+
+</configuration>

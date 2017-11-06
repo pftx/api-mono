@@ -13,6 +13,8 @@ logging:
     com.x.api: 'DEBUG'
   pattern:
     level: "%X{mdcData} %5p"
+  path: logs
+  file: ${logging.path}/${spring.application.name}
 
 eureka:
   instance:
