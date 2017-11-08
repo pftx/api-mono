@@ -27,10 +27,10 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8022}/eureka/
 
-token:
-  authKey: Lippolis
-
 # Zuul config.
+endpoints.routes.enabled: false
+endpoints.filters.enabled: false
+
 zuul.routes:
   auth:
     path: /oauth/**

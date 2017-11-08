@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 
 	<name>auth-service</name>
-	<description>Service registration and discovery.</description>
+	<description>Authentication and Authorization.</description>
 
 	<dependencies>
 		<dependency>
