@@ -22,8 +22,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 
-import com.x.api.auth.custom.CustomAccessDeniedHandler;
-import com.x.api.auth.custom.CustomAuthenticationEntryPoint;
+import com.x.api.common.spring.CustomAccessDeniedHandler;
+import com.x.api.common.spring.CustomAuthenticationEntryPoint;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>

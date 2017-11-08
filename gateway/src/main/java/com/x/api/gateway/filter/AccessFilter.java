@@ -30,6 +30,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Component;
 
+import com.netflix.client.ClientException;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.x.api.auth.client.AuthClient;
@@ -37,6 +38,7 @@ import com.x.api.auth.util.TokenUtil;
 import com.x.api.common.dto.ErrorResponse;
 import com.x.api.common.spring.XUidFilter;
 import com.x.api.common.util.Constants;
+import com.x.api.common.util.ExceptionUtil;
 import com.x.api.common.xauth.XTokenPrincipal;
 import com.x.api.common.xauth.XTokenUtil;
 import com.x.api.common.xauth.token.SecuredXToken;
@@ -54,8 +56,8 @@ public class AccessFilter extends ZuulFilter {
 
     private static final String CONTENT_TYPE = "Content-Type";
     private static final String CONTENT_TYPE_VALUE = "application/json;charset=UTF-8";
-    private static final String NO_TOKEN_MSG = "Access token is required to access this resource.";
-    private static final String BAD_TOKEN_MSG = "Invalid access token.";
+    private static final String NO_TOKEN_MSG = Constants.MSG_NO_ACCESS_TOKEN;
+    private static final String BAD_TOKEN_MSG = Constants.MSG_BAD_ACCESS_TOKEN;
 
     private static final Logger log = LoggerFactory.getLogger(AccessFilter.class);
 
@@ -123,6 +125,16 @@ public class AccessFilter extends ZuulFilter {
             int status = e.status() == 400 ? HttpServletResponse.SC_UNAUTHORIZED : e.status();
             log.debug("Failed to get token details: {}", e.getMessage());
             generateResponse(ctx, xUid, status, BAD_TOKEN_MSG);
+        } catch (RuntimeException e) { // NOSONAR.
+            Throwable x = e.getCause();
+            if (x instanceof ClientException) {
+                log.debug("Failed to execute token details: {}", x.getMessage());
+                generateResponse(ctx, xUid, HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                        Constants.MSG_SERVICE_UNAVAILABLE);
+            } else {
+                generateResponse(ctx, xUid, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                        ExceptionUtil.getExceptionMessage(x == null ? e : x));
+            }
         }
         return null;
     }
@@ -132,6 +144,7 @@ public class AccessFilter extends ZuulFilter {
         ctx.setSendZuulResponse(false);
         ctx.setResponseStatusCode(httpStatus);
         ctx.addZuulResponseHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
+        ctx.addZuulResponseHeader(Constants.HEADER_X_ERR_MSG, errorMessage);
         try {
             ctx.setResponseBody(JacksonUtil.obj2Str(body));
         } catch (IOException e) {

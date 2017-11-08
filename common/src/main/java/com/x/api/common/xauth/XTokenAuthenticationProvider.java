@@ -56,7 +56,7 @@ public class XTokenAuthenticationProvider implements AuthenticationProvider {
             RawXToken x = (RawXToken) authentication;
             return XTokenUtil.decodeToken(x.getName(), authenticationKey);
         } catch (IllegalArgumentException e) {
-            throw new BadCredentialsException("Invalid X-Token.", e);
+            throw new BadCredentialsException(e.getMessage(), e);
         }
     }
 

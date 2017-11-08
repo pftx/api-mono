@@ -35,10 +35,10 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
-import com.x.api.auth.custom.CustomAccessDeniedHandler;
-import com.x.api.auth.custom.CustomAuthenticationEntryPoint;
 import com.x.api.auth.service.ExtraInfoTokenEnhancerService;
 import com.x.api.auth.service.ExtraInfoUserDetailsService;
+import com.x.api.common.spring.CustomAccessDeniedHandler;
+import com.x.api.common.spring.CustomAuthenticationEntryPoint;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>

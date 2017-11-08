@@ -1,5 +1,5 @@
 /**
- * Constants.java
+ * AuthService.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,22 +15,30 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.util;
+package com.x.api.account.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import com.x.api.common.xauth.XTokenPrincipal;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 6, 2017
+ * @since Oct 31, 2017
  */
-public interface Constants {
+@Service
+public class AuthService {
 
-    String HEADER_X_TOKEN = "X-Token";
-    String HEADER_X_UID = "X-Uid";
-    String HEADER_X_ERR_MSG = "X-Err-Msg";
+    private static final String UPDATE_LAST_LOGIN =
+            "UPDATE user_account SET last_login = NOW() WHERE user_id = ? AND account_id = ?";
 
-    String MSG_SERVICE_UNAVAILABLE = "Service temporarily unavailable, please try again later.";
-    String MSG_NO_ACCESS_TOKEN = "Access token is required to access this resource.";
-    String MSG_BAD_ACCESS_TOKEN = "Invalid access token.";
-    String MSG_BAD_X_TOKEN = "Invalid X-Token.";
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    public boolean updateLastLogin(XTokenPrincipal info) {
+        return jdbcTemplate.update(UPDATE_LAST_LOGIN, info.getOpUserId(), info.getOpAccountId()) > 0;
+    }
 
 }

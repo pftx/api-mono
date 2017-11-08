@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: account-server
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER_URL:http://localhost:8011}
+      username: application
+      password: 6DuEkv1ohcIV

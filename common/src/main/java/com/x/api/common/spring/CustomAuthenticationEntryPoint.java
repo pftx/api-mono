@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.auth.custom;
+package com.x.api.common.spring;
 
 import java.io.IOException;
 
@@ -31,7 +31,6 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 import com.x.api.common.dto.ErrorResponse;
-import com.x.api.common.spring.XUidFilter;
 import com.x.api.common.util.Constants;
 import com.x.api.common.util.ExceptionUtil;
 
