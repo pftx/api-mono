@@ -32,6 +32,10 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.netflix.netflix-commons</groupId>
+			<artifactId>netflix-commons-util</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>io.github.pftx</groupId>
 			<artifactId>auth-api</artifactId>
 			<version>${project.version}</version>
