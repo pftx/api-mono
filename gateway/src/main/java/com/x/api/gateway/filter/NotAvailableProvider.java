@@ -38,8 +38,6 @@ import com.x.api.common.util.Constants;
 @Component
 public class NotAvailableProvider implements ZuulFallbackProvider {
 
-    private static final String DEFAULT_MSG = "Service temporarily unavailable, please try again later.";
-
     /**
      * This is the override of super method.
      * @see org.springframework.cloud.netflix.zuul.filters.route.ZuulFallbackProvider#getRoute()
@@ -60,7 +58,7 @@ public class NotAvailableProvider implements ZuulFallbackProvider {
             @Override
             public InputStream getBody() throws IOException {
                 String xUid = XUidFilter.getXUid();
-                ErrorResponse body = new ErrorResponse(xUid, getRawStatusCode(), DEFAULT_MSG);
+                ErrorResponse body = new ErrorResponse(xUid, getRawStatusCode(), Constants.MSG_SERVICE_UNAVAILABLE);
                 return new ByteArrayInputStream(JacksonUtil.obj2bin(body));
             }
 
@@ -68,7 +66,7 @@ public class NotAvailableProvider implements ZuulFallbackProvider {
             public HttpHeaders getHeaders() {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.add(Constants.HEADER_X_ERR_MSG, DEFAULT_MSG);
+                headers.add(Constants.HEADER_X_ERR_MSG, Constants.MSG_SERVICE_UNAVAILABLE);
                 return headers;
             }
 

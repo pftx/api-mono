@@ -1,5 +1,5 @@
 /**
- * Constants.java
+ * UniqueIdGenerator.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,25 +15,24 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.util;
+package com.x.api.common.helper;
+
+import java.security.SecureRandom;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 6, 2017
+ * @since Nov 10, 2017
  */
-public interface Constants {
+public class UniqueIdGenerator {
 
-    String HEADER_X_TOKEN = "X-Token";
-    String HEADER_X_UID = "X-Uid";
-    String HEADER_X_ERR_MSG = "X-Err-Msg";
-    String HEADER_X_FORWARD = "X-Forwarded-For";
+    private static final long BASE = 1510298810994L;
+    private static final SecureRandom sRand = new SecureRandom();
 
-    String MSG_SERVICE_UNAVAILABLE = "Service temporarily unavailable, please try again later.";
-    String MSG_INTERNAL_ERROR =
-            "We encountered an internal error. Please contact our client services team or try again later.";
-    String MSG_NO_ACCESS_TOKEN = "Access token is required to access this resource.";
-    String MSG_BAD_ACCESS_TOKEN = "Invalid access token.";
-    String MSG_BAD_X_TOKEN = "Invalid X-Token.";
+    public static long uniqueId() {
+        long basePart = System.currentTimeMillis() - BASE;
+        long minerPart = (sRand.nextLong() ^ (basePart % 1000)) % 10000;
+        return basePart * 100 + minerPart;
+    }
 
 }

@@ -71,7 +71,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex, Object nobody, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
         String xUid = XUidFilter.getXUid();
-        ErrorResponse body = new ErrorResponse(xUid, status.value(), ExceptionUtil.getExceptionMessage(ex));
+        String message = ExceptionUtil.getExceptionMessage(ex);
+        ErrorResponse body = new ErrorResponse(xUid, status.value(), message);
+        headers.add(Constants.HEADER_X_ERR_MSG, message);
         return new ResponseEntity<Object>(body, headers, status);
     }
 

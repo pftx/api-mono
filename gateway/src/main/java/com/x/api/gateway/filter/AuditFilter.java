@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import com.x.api.common.spring.XUidFilter;
 import com.x.api.common.util.Constants;
 import com.x.api.gateway.bean.AuditBean;
 
@@ -64,9 +63,9 @@ public class AuditFilter extends ZuulFilter {
         HttpServletRequest request = ctx.getRequest();
         AuditBean bean = new AuditBean();
         bean.setRequestUrl(request.getRequestURL().toString());
-        bean.setXUid(ctx.getResponse().getHeader(XUidFilter.X_UID));
+        bean.setXUid(ctx.getResponse().getHeader(Constants.HEADER_X_UID));
         String remoteAddr = request.getRemoteAddr();
-        String xForwardedFor = request.getHeader("X-Forwarded-For");
+        String xForwardedFor = request.getHeader(Constants.HEADER_X_FORWARD);
         bean.setIp(getRealIp(remoteAddr, xForwardedFor));
         bean.setRemoteAddr(remoteAddr);
         bean.setXForwardedFor(xForwardedFor);

@@ -87,7 +87,7 @@ public class AccessFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
         String xUid = XUidFilter.getXUid();
-        ctx.addZuulRequestHeader(XUidFilter.X_UID, xUid);
+        ctx.addZuulRequestHeader(Constants.HEADER_X_UID, xUid);
         ctx.set(X_IN_TIME, System.currentTimeMillis());
 
         log.info("[{}] -> {}", request.getMethod(), request.getRequestURL().toString());

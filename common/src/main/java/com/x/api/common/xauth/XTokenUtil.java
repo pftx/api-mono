@@ -68,7 +68,7 @@ public class XTokenUtil {
         principal.setOpUserId(toLong(list.get(2)));
         principal.setOpAccountId(toLong(list.get(3)));
         principal.setPermissionList(Splitter.on(ATTRI_SEP).splitToList(list.get(4)));
-        return new SecuredXToken(principal, credential);
+        return new SecuredXToken(principal, rawToken);
     }
 
     public static String encodeToken(SecuredXToken token, String secret) {

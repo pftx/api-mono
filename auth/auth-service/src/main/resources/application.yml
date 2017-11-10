@@ -34,6 +34,9 @@ token:
 
 # JDBC config.
 spring:
+  redis:
+    host: localhost
+    port: 6379
   datasource:
     url: jdbc:mysql://localhost/auth?verifyServerCertificate=false&useSSL=false
     username: dl_auth

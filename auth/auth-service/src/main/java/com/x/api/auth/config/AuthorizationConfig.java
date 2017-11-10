@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -33,7 +34,7 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 
 import com.x.api.auth.service.ExtraInfoTokenEnhancerService;
 import com.x.api.auth.service.ExtraInfoUserDetailsService;
@@ -78,9 +79,12 @@ public class AuthorizationConfig extends AuthorizationServerConfigurerAdapter {
     @Value("${token.refreshTokenValiditySeconds}")
     private int refreshTokenValiditySeconds;
 
+    @Autowired
+    private RedisConnectionFactory redisConnectionFactory;
+
     @Bean
     public TokenStore tokenStore() {
-        return new JdbcTokenStore(dataSource);
+        return new RedisTokenStore(redisConnectionFactory);
     }
 
     @Bean

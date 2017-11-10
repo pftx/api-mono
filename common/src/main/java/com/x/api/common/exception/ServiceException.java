@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.google.common.base.Preconditions;
+import com.x.api.common.util.Constants;
 import com.x.api.common.util.ExceptionUtil;
 
 /**
@@ -34,8 +35,6 @@ public abstract class ServiceException extends RuntimeException {
      * Generated Uid.
      */
     private static final long serialVersionUID = 3082323860633678953L;
-    private static final String DEFAULT_MSG =
-            "We encountered an internal error. Please contact our client services team or try again later.";
 
     private Map<String, Object> extension;
 
@@ -43,7 +42,7 @@ public abstract class ServiceException extends RuntimeException {
      * Constructor
      */
     public ServiceException() {
-        this(DEFAULT_MSG);
+        this(Constants.MSG_INTERNAL_ERROR);
     }
 
     public ServiceException(String message) {
