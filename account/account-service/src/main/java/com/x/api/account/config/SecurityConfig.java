@@ -17,6 +17,7 @@
  */
 package com.x.api.account.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ import com.x.api.common.xauth.XTokenAuthenticationProvider;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan({"com.x.api.common.spring"})
+@MapperScan("com.x.api.account.mapper")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${xtoken.authKey}")
@@ -59,6 +61,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new XTokenAuthenticationProvider(authKey);
     }
 
+    // @Bean
+    // public SqlSessionFactory sqlSessionFactoryBean() throws Exception {
+    // SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+    // sqlSessionFactoryBean.setDataSource(dataSource());
+    // PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+    // sqlSessionFactoryBean.setMapperLocations(resolver.getResources("classpath:/mybatis/*.xml"));
+    // return sqlSessionFactoryBean.getObject();
+    // }
+
+
     /**
      * This is the override of super method.
      * 
@@ -71,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/swagger-ui.html").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()
                 .antMatchers("/webjars/**").permitAll()
+                .antMatchers("/monitor/**").permitAll()
                 .antMatchers("/v2/api-docs").permitAll()
                 .anyRequest().authenticated()
                 .and()

@@ -63,8 +63,8 @@ public class AuthController {
 
     @RequestMapping(value = "/hi", method = RequestMethod.GET)
     @ApiOperation(value = "Test the configuration profile.", httpMethod = "GET", produces = "application/json")
-    public GenericResponse hi() {
-        return new GenericResponse("Hello " + message);
+    public GenericResponse<String> hi() {
+        return new GenericResponse<String>("Hello " + message);
     }
 
     @RequestMapping(value = "/ext/user_info", method = RequestMethod.GET)
@@ -107,18 +107,18 @@ public class AuthController {
 
     @RequestMapping(value = "/ext/revoke_access_token", method = RequestMethod.POST)
     @ApiOperation(value = "Revoke the current access token.", httpMethod = "POST", produces = "application/json")
-    public GenericResponse revokeAccessToken(Principal principal) {
+    public GenericResponse<String> revokeAccessToken(Principal principal) {
         OAuth2AccessToken accessToken = getAccessToken(principal);
         tokenStore.removeAccessToken(accessToken);
         String info = "Your access_token: " + accessToken.getValue() + " has been revoked.";
-        GenericResponse resp = new GenericResponse(info);
+        GenericResponse<String> resp = new GenericResponse<String>(info);
         return resp;
     }
 
     @RequestMapping(value = "/ext/revoke_refresh_token", method = RequestMethod.POST)
     @ApiOperation(value = "Revoke the current refresh token together with access token.", httpMethod = "POST",
             produces = "application/json")
-    public GenericResponse revokeRefreshToken(Principal principal) {
+    public GenericResponse<String> revokeRefreshToken(Principal principal) {
         OAuth2AccessToken accessToken = getAccessToken(principal);
         OAuth2RefreshToken refreshToken = accessToken.getRefreshToken();
         tokenStore.removeAccessToken(accessToken);
@@ -128,7 +128,7 @@ public class AuthController {
             response += ", and your refresh_token: " + refreshToken.getValue() + " has been revoked too";
         }
         String info = response + ".";
-        GenericResponse resp = new GenericResponse(info);
+        GenericResponse<String> resp = new GenericResponse<String>(info);
         return resp;
     }
 

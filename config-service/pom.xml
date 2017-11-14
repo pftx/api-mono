@@ -30,7 +30,7 @@
 		</dependency>
 		<dependency>
 			<groupId>io.github.pftx</groupId>
-			<artifactId>common</artifactId>
+			<artifactId>common-spring</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

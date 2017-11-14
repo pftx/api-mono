@@ -50,13 +50,13 @@ public class InternalController {
 
     @RequestMapping(value = "/x-token", method = RequestMethod.GET)
     @ApiOperation(value = "Get an internal x-token.", httpMethod = "GET", produces = "application/json")
-    public GenericResponse getXToken(Principal principal) {
+    public GenericResponse<String> getXToken(Principal principal) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         XInfoUser user = (XInfoUser) authentication.getPrincipal();
         SecuredXToken xToken = new SecuredXToken(user.getExtension(), user.getPassword());
         String xTokenEnc = XTokenUtil.encodeToken(xToken, authKey);
         logger.info("/internal/x-token, user: {}, x-token: {}.", user.getUsername(), xTokenEnc);
-        return new GenericResponse("x-token", xTokenEnc);
+        return new GenericResponse<String>("x-token", xTokenEnc);
     }
 
 }

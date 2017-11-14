@@ -31,8 +31,7 @@ import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
  */
 @EnableEurekaServer
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = {
-        org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration.class})
+@EnableAutoConfiguration
 public class EurekaServer {
 
     public static void main(String[] args) throws Exception {

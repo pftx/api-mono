@@ -4,30 +4,30 @@
 
 	<parent>
 		<groupId>io.github.pftx</groupId>
-		<artifactId>auth</artifactId>
+		<artifactId>common</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 		<relativePath>../</relativePath>
 	</parent>
 
-	<artifactId>auth-api</artifactId>
+	<artifactId>common-spring</artifactId>
 	<packaging>jar</packaging>
 
-	<name>auth-api</name>
-	<description>Auth DTOs and Operators.</description>
+	<name>common-spring</name>
+	<description>Common backend codes used to integrate spring.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>io.github.pftx</groupId>
-			<artifactId>common-spring</artifactId>
+			<artifactId>common-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-feign</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.security.oauth</groupId>
-			<artifactId>spring-security-oauth2</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 	</dependencies>
 
