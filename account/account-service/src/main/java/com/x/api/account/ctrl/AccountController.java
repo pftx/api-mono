@@ -1,5 +1,5 @@
 /**
- * AuthController.java
+ * AccountController.java
  *
  * Copyright 2017 the original author or authors.
  *

@@ -37,31 +37,31 @@ import lombok.EqualsAndHashCode;
  * @since Nov 14, 2017
  */
 @Data
-@EqualsAndHashCode(callSuper=true)
-@JsonPropertyOrder({ "accountId", "name", "type", "accountBalance", "currencyCode", "timezone" })
+@EqualsAndHashCode(callSuper = true)
+@JsonPropertyOrder({"accountId", "name", "type", "accountBalance", "currencyCode", "timezone"})
 public class AccountDto extends BaseDto implements Timezone {
 
     private String accountId;
-    
-    @NotNull(message="The 'name' can not be null.")
-    @Size(min=4,max=126,message="The length of 'name' must in range [4, 126].")
-    @Pattern(regexp="[\\w _\\-\\.'@]{4,126}", message="The 'name' must be all word character: [a-zA-Z_0-9 _-.'@].")
+
+    @NotNull(message = "The 'name' can not be null.")
+    @Size(min = 4, max = 126, message = "The length of 'name' must in range [4, 126].")
+    @Pattern(regexp = "[\\w _\\-\\.'@]{4,126}", message = "The 'name' must be only character: [a-zA-Z_0-9 _-.'@].")
     private String name;
-    
-    @Size(min=4,max=255,message="The length of 'description' must in range [4, 255].")
+
+    @Size(min = 4, max = 255, message = "The length of 'description' must in range [4, 255].")
     private String description;
-    
+
     @ValidEnum(type = AccountType.class)
     private String type;
-    
-    @Pattern(regexp="\\d+\\.?\\d*", message="The 'accountBalance' must be decimal.")
+
+    @Pattern(regexp = "\\d+\\.?\\d*", message = "The 'accountBalance' must be decimal.")
     private String accountBalance;
-    
-    @Size(min=3,max=3,message="The length of 'currencyCode' must be 3.")
-    @Pattern(regexp="[A-Z]{3}", message="The 'currencyCode' must be all Upper Case.")
+
+    @Size(min = 3, max = 3, message = "The length of 'currencyCode' must be 3.")
+    @Pattern(regexp = "[A-Z]{3}", message = "The 'currencyCode' must be all Upper Case.")
     private String currencyCode;
-    
-    @Size(min=3,max=32,message="The length of 'timezone' must in range [3, 32].")
+
+    @Size(min = 3, max = 32, message = "The length of 'timezone' must in range [3, 32].")
     @ValidTimezone
     private String timezone;
 
