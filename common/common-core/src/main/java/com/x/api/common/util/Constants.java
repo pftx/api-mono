@@ -17,6 +17,8 @@
  */
 package com.x.api.common.util;
 
+import java.math.BigDecimal;
+
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
@@ -35,14 +37,21 @@ public interface Constants {
     String MSG_NO_ACCESS_TOKEN = "Access token is required to access this resource.";
     String MSG_BAD_ACCESS_TOKEN = "Invalid access token.";
     String MSG_BAD_X_TOKEN = "Invalid X-Token.";
+    String MSG_BAD_REQUEST_VALIDATION = "Your request failed to pass validation.";
     String MSG_NO_PERMISSION = "You are not authorized to access this endpoint.";
     String MSG_NO_PERM_TO_OP = "You are not authorized to access the %s with Id %d.";
+    String MSG_NOT_FOUND = "The %s with Id %d not found.";
 
     String PERM_SUPER_LOGIN = "super_into";
     String PERM_ADMIN_METRICS = "admin_metrics";
+    String PERM_ACCT_ADMIN = "account_admin";
     String PERM_WRITE = "account_write";
     String PERM_READ = "account_read";
 
     String TYPE_ACCOUNT = "account";
+
+    int INT_MILLION = 1000000;
+
+    BigDecimal BD_MILLION = new BigDecimal(INT_MILLION);
 
 }

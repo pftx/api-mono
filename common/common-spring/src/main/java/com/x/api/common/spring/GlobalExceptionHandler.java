@@ -17,6 +17,8 @@
  */
 package com.x.api.common.spring;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -24,6 +26,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
@@ -45,27 +51,58 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ServiceException.class)
     public ResponseEntity<Object> handleServiceException(ServiceException ex, WebRequest request) {
-        return handleExceptionInternal(ex, request, ex.getExtension());
+        return handleExceptionInternal(ex, ex.getExtension());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleEverything(Exception ex, WebRequest request) {
-        return handleExceptionInternal(ex, request, null);
+        return handleExceptionInternal(ex, null);
     }
 
-    public ResponseEntity<Object> handleExceptionInternal(Exception ex, WebRequest request,
-            Map<String, Object> extension) {
-        HttpHeaders headers = new HttpHeaders();
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
+        return handleExceptionInternal(Constants.MSG_NO_PERMISSION, HttpStatus.FORBIDDEN, ex, null);
+    }
+
+    /**
+     * This is the override of super method.
+     * 
+     * @see org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler#handleMethodArgumentNotValid(org.springframework.web.bind.MethodArgumentNotValidException,
+     *      org.springframework.http.HttpHeaders, org.springframework.http.HttpStatus,
+     *      org.springframework.web.context.request.WebRequest)
+     */
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+            HttpHeaders headers, HttpStatus status, WebRequest request) {
+        List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
+        Map<String, Object> extension = new HashMap<String, Object>();
+        for (ObjectError err : allErrors) {
+            if (err instanceof FieldError) {
+                extension.put(((FieldError) err).getField(), err.getDefaultMessage());
+            } else {
+                extension.put(err.getObjectName(), err.getDefaultMessage());
+            }
+        }
+        return handleExceptionInternal(Constants.MSG_BAD_REQUEST_VALIDATION, HttpStatus.BAD_REQUEST, ex, extension);
+    }
+
+    public ResponseEntity<Object> handleExceptionInternal(Exception ex, Map<String, Object> extension) {
         HttpStatus status = ExceptionUtil.findHttpStatus(ex);
-        String xUid = XUidFilter.getXUid();
         String message = ExceptionUtil.getExceptionMessage(ex);
+        return handleExceptionInternal(message, status, ex, extension);
+    }
+
+    public ResponseEntity<Object> handleExceptionInternal(String message, HttpStatus status, Exception ex,
+            Map<String, Object> extension) {
+        String xUid = XUidFilter.getXUid();
+        HttpHeaders headers = new HttpHeaders();
 
         if (status.is5xxServerError()) {
             logger.error("--XXX-- {} error occurred - {}.", status, xUid, ex);
         } else if (logger.isDebugEnabled()) {
             logger.debug("--DBG-- {} error occurred - {}.", status, xUid, ex);
         } else {
-            logger.info("--YYY-- {} error occurred - {}, msg = {}.", status, xUid, message);
+            logger.info("--YYY-- {} error occurred - {}, msg = {}", status, xUid, message);
         }
 
         headers.add(Constants.HEADER_X_ERR_MSG, message);

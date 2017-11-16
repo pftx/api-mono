@@ -17,9 +17,17 @@
  */
 package com.x.api.account.model;
 
-import java.util.Date;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.x.api.common.dto.Timezone;
+import com.x.api.common.enums.AccountType;
+import com.x.api.common.json.EnumDeserializer;
+import com.x.api.common.json.MoneyMicrosDeserializer;
+import com.x.api.common.json.MoneyMicrosSerializer;
+import com.x.api.common.model.BaseModel;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
@@ -27,17 +35,18 @@ import lombok.Data;
  * @since Nov 14, 2017
  */
 @Data
-public class Account {
+@EqualsAndHashCode(callSuper=true)
+public class Account extends BaseModel implements Timezone {
 
     private long accountId;
     private String name;
     private String description;
-    private int status;
-    private int type;
+    @JsonDeserialize(using = EnumDeserializer.class)
+    private AccountType type;
+    @JsonDeserialize(using = MoneyMicrosDeserializer.class)
+    @JsonSerialize(using = MoneyMicrosSerializer.class)
     private long accountBalance;
     private String currencyCode;
     private String timezone;
-    private Date created;
-    private Date modified;
 
 }

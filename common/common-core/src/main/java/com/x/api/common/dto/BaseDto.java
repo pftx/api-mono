@@ -1,5 +1,5 @@
 /**
- * AccountInfo.java
+ * BaseDto.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,39 +15,30 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.xauth;
+package com.x.api.common.dto;
 
-import java.io.Serializable;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.x.api.common.validator.annotation.ValidEnum;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Oct 27, 2017
+ * @since Nov 15, 2017
  */
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class AccountInfo implements Serializable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
+@JsonPropertyOrder({ "status", "created", "modified" })
+public class BaseDto {
 
-    /**
-     * Generated UID.
-     */
-    private static final long serialVersionUID = -70982143123098L;
-
-    @JsonProperty("account_id")
-    private Long accountId;
-
-    @JsonProperty("account_name")
-    private String accountName;
-
-    @JsonProperty("permission_list")
-    private List<String> permissionList;
+    @ValidEnum(supportedList = {"Active", "Inactive"})
+    private String status;
+    private String created;
+    private String modified;
 
 }

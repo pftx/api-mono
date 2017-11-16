@@ -16,25 +16,27 @@ INSERT INTO `permissions` (`permission`, `display_name`, `description`)
 VALUES
     ('super_into','Super Into', 'Super into other accounts.'),
     ('admin_metrics','See Admin Metrics', null),
+    ('account_admin','Attach User to Account', null),
     ('account_write','Update Account Data', null),
-    ('account_read','Read Account Data', null);
+    ('account_read','Read Account Data', null)
 ON DUPLICATE KEY UPDATE modified = CURRENT_TIMESTAMP();
 
-REPLACE INTO `authority_permissions` (`permission`, `authority`)
+REPLACE INTO `authority_permissions` (`authority`, `permission`)
 VALUES
-    ('super_into','ROLE_SUPER_LOGIN'),
-    ('admin_metrics','ROLE_ADMIN'),
-    ('account_write','ROLE_USER'),
-    ('account_read','ROLE_USER');
+    ('ROLE_SUPER_LOGIN', 'super_into'),
+    ('ROLE_ADMIN', 'admin_metrics'),
+    ('ROLE_ADMIN', 'account_admin'),
+    ('ROLE_USER','account_write'),
+    ('ROLE_USER','account_read');
 
 INSERT INTO `account` (`account_id`, `name`, `type`, `account_balance`)
 VALUES
     (1,'Demo Account',2,54321),
     (2,'Root Account',1,100);
 
-REPLACE INTO `user_account` (`user_id`, `account_id`, `last_login`)
+REPLACE INTO `user_account` (`user_id`, `account_id`, `permission`)
 VALUES
-    (1,1,null),(1,2,NOW()), (2,1,null);
+    (1,1,'account_admin'),(1,2,'account_write'), (2,1,'account_read');
 
 INSERT INTO `oauth_client_details` (`client_id`, `resource_ids`, `client_secret`, `scope`, `authorized_grant_types`, `web_server_redirect_uri`, `authorities`, `access_token_validity`, `refresh_token_validity`, `additional_information`, `autoapprove`)
 VALUES

@@ -1,5 +1,5 @@
 /**
- * AccountClient.java
+ * AccountTypeHandler.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -12,24 +12,28 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.x.api.account.client;
+package com.x.api.common.spring.mybatis.typehandler;
 
-import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
+import org.apache.ibatis.type.MappedTypes;
 
-import com.x.api.account.dto.AccountDto;
+import com.x.api.common.enums.AccountType;
+import com.x.api.common.helper.EnumHelper;
+import com.x.api.common.spring.mybatis.BaseEnumTypeHandler;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Oct 18, 2017
+ * @since Nov 14, 2017
  */
-@FeignClient(value = "account-server")
-public interface AccountClient {
+@MappedTypes({AccountType.class})
+@MappedJdbcTypes({JdbcType.VARCHAR, JdbcType.TINYINT, JdbcType.INTEGER})
+public class AccountTypeHandler extends BaseEnumTypeHandler<AccountType> {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/oauth/check_token")
-    AccountDto checkToken(@RequestParam(value = "token") String token);
+    @Override
+    protected AccountType getEnum(int orinal) {
+        return EnumHelper.parseFromInt(AccountType.class, orinal);
+    }
 
 }

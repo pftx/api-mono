@@ -32,6 +32,11 @@ public class BadRequestException extends ServiceException {
 
     private static final long serialVersionUID = -8270084907305110275L;
 
+    public static BadRequestException duplicateKey(String entityType, String keyType, String value) {
+        throw new BadRequestException("The " + entityType + " with " + keyType + ": '" + value
+                + "' already exists, please use other combination.");
+    }
+
     public BadRequestException(Map<String, Object> extension) {
         super(extension);
     }

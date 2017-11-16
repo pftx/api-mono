@@ -24,7 +24,7 @@ import com.google.common.base.Preconditions;
  * @version 1.0.0
  * @since Oct 30, 2017
  */
-public interface EnumHelper {
+public class EnumHelper {
 
     public static <T extends Enum<T>> T parseFromInt(Class<T> cls, int val) {
         Preconditions.checkNotNull(cls);

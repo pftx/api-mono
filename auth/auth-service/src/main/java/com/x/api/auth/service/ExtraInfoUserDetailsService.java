@@ -19,6 +19,7 @@ package com.x.api.auth.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.niolex.commons.collection.CollectionUtil;
 import org.slf4j.Logger;
@@ -31,6 +32,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.x.api.auth.dto.XInfoUser;
 import com.x.api.common.enums.Status;
 import com.x.api.common.xauth.AccountInfo;
@@ -51,7 +54,7 @@ public class ExtraInfoUserDetailsService implements UserDetailsService {
     private static final String SELECT_PERMISSIONS =
             "SELECT permission FROM permissions JOIN authority_permissions USING (permission) WHERE authority IN (:authorities) AND status = 1";
     private static final String SELECT_ACCOUNTS =
-            "SELECT account_id, name FROM account JOIN user_account USING (account_id) WHERE user_id = ? AND status = 1 "
+            "SELECT account_id, name, permission FROM account JOIN user_account USING (account_id) WHERE user_id = ? AND status = 1 "
                     + "ORDER BY last_login DESC";
 
     private static final RowMapper<XInfoUser> BASIC_INFO_MAPPER = (rs, rowNum) -> {
@@ -68,8 +71,14 @@ public class ExtraInfoUserDetailsService implements UserDetailsService {
                 ext);
     };
 
+    private static final Map<String, List<String>> PERM_MAP = ImmutableMap.<String, List<String>>of(
+            "account_admin", ImmutableList.of("account_admin", "account_write", "account_read"),
+            "account_write", ImmutableList.of("account_write", "account_read"),
+            "account_read", ImmutableList.of("account_read"));
+
     private static final RowMapper<AccountInfo> ACCOUNT_INFO_MAPPER = (rs, rowNum) -> {
-        return new AccountInfo(rs.getLong("account_id"), rs.getString("name"));
+        return new AccountInfo(rs.getLong("account_id"), rs.getString("name"),
+                PERM_MAP.get(rs.getString("permission")));
     };
 
     private JdbcTemplate jdbcTemplate;

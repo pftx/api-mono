@@ -1,5 +1,5 @@
 /**
- * AccountDetails.java
+ * AccountType.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,24 +15,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.account.dto;
+package com.x.api.common.enums;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 14, 2017
+ * @since Nov 16, 2017
  */
-public class AccountDetails {
+public enum AccountType {
 
-    private String accountId;
-    private String name;
-    private String description;
-    private String status;
-    private String type;
-    private String accountBalance;
-    private String currencyCode;
-    private String timezone;
-    private String created;
-    private String modified;
+    PMP, XBOX, iPlay;
 
 }

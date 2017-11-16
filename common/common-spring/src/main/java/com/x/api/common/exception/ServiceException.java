@@ -29,7 +29,7 @@ import com.x.api.common.util.ExceptionUtil;
  * @since Nov 2, 2017
  */
 @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-public abstract class ServiceException extends RuntimeException {
+public class ServiceException extends RuntimeException {
 
     /**
      * Generated Uid.

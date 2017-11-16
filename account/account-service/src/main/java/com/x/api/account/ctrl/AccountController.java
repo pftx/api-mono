@@ -17,7 +17,7 @@
  */
 package com.x.api.account.ctrl;
 
-import java.security.Principal;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,13 +25,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.x.api.account.dto.AccountDto;
+import com.x.api.account.model.Account;
 import com.x.api.account.service.AccountService;
 import com.x.api.common.dto.GenericResponse;
-import com.x.api.common.xauth.XAuthUtil;
+import com.x.api.common.util.DtoUtil;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -61,10 +64,20 @@ public class AccountController {
     @RequestMapping(value = "/{accountId:[\\d]+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get the account information by the specified accountId.", httpMethod = "GET",
             produces = "application/json")
-    public Principal getAccount(Authentication auth, @PathVariable("accountId") long accountId) {
-        logger.info("/acct/accounts/{}, user: {}.", accountId, auth.getName());
-        XAuthUtil.checkCanOperate(auth, accountId);
-        return auth;
+    public AccountDto getAccount(Authentication auth, @PathVariable("accountId") long accountId) {
+        logger.info("GET /acct/accounts/{}, user: {}.", accountId, auth.getName());
+        return DtoUtil.transform(AccountDto.class, accountService.getAccount(auth, accountId));
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    @ApiOperation(value = "Create new account.", httpMethod = "POST",
+            produces = "application/json")
+    public AccountDto createAccount(Authentication auth, @Valid @RequestBody AccountDto req) {
+        logger.info("POST /acct/accounts, user: {}.", auth.getName());
+        req.setAccountId(null);
+        Account account = DtoUtil.transform(Account.class, req);
+        Account created = accountService.createAccount(auth, account);
+        return DtoUtil.transform(AccountDto.class, created);
     }
 
 }

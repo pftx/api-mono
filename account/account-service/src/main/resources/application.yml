@@ -13,9 +13,14 @@ security:
 logging:
   level:
     com.netflix.discovery: 'OFF'
-    org.springframework.cloud: 'DEBUG'
+    org.mybatis: 'DEBUG'
+    org.apache.ibatis: 'DEBUG'
+    com.x.api: 'DEBUG'
   pattern:
     level: "%X{mdcData} %5p"
+
+mybatis:
+  config: classpath:mybatis-config.xml
 
 eureka:
   instance:

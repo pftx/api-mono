@@ -52,7 +52,7 @@ create table account (
   type TINYINT NOT NULL DEFAULT 0,
   account_balance BIGINT(20) NOT NULL DEFAULT 0 COMMENT 'In micros',
   currency_code CHAR(3) NOT NULL DEFAULT 'CNY',
-  timezone VARCHAR(32) NOT NULL DEFAULT 'Asia/Chengdu',
+  timezone VARCHAR(32) NOT NULL DEFAULT 'Asia/Shanghai',
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Timestamp of initial creation.',
   modified TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 );
@@ -60,9 +60,11 @@ create table account (
 create table user_account (
   user_id INT NOT NULL,
   account_id INT NOT NULL,
+  permission VARCHAR(50) NOT NULL,
   last_login TIMESTAMP,
   constraint fk_user_account_user foreign key(user_id) references users(user_id),
   constraint fk_user_account_account foreign key(account_id) references account(account_id),
+  constraint fk_user_account_perm foreign key(permission) references permissions(permission),
   constraint PRIMARY KEY pk_user_account(user_id, account_id)
 );
 

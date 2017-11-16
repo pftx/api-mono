@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.ResultMap;
@@ -59,9 +60,10 @@ public interface AccountDao {
     @Select(SELECT_COL + " WHERE name like #{name} AND status < 3")
     List<Account> findByName(@Param("name") String name);
 
-    @Insert("INSERT INTO account(" + SELECT_COL
-            + ") VALUES (#{accountId}, #{name}, #{description}, #{status}, #{type}, #{accountBalance}, #{currencyCode}, #{timezone}, #{created}, #{modified})")
-    public void createAccount(Account account);
+    @Insert("INSERT INTO account(name, description, status, type, account_balance, currency_code, timezone)"
+            + " VALUES (#{name}, #{description}, #{status, javaType=status, jdbcType=TINYINT}, #{type, javaType=AccountType, jdbcType=TINYINT}, #{accountBalance}, #{currencyCode}, #{timezone})")
+    @Options(useGeneratedKeys = true, keyProperty = "accountId", keyColumn = "account_id")
+    public long createAccount(Account account);
 
     @Update("UPDATE account SET status = 3 WHERE account_id = #{accountId} AND status < 3")
     int deleteAccount(@Param("accountId") long accountId);

@@ -18,9 +18,17 @@
 package com.x.api.account.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import com.x.api.account.mapper.AccountDao;
+import com.x.api.account.model.Account;
+import com.x.api.common.exception.BadRequestException;
+import com.x.api.common.exception.NotFoundException;
+import com.x.api.common.util.Constants;
+import com.x.api.common.xauth.XAuthUtil;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
@@ -33,8 +41,24 @@ public class AccountService {
     @Autowired
     private AccountDao accountDao;
 
-    public void getAccount() {
-        ;
+    public Account getAccount(Authentication auth, long accountId) {
+        XAuthUtil.checkCanOperate(auth, accountId);
+        Account account = accountDao.findById(accountId);
+        if (account == null) {
+            throw NotFoundException.notFound(Constants.TYPE_ACCOUNT, accountId);
+        }
+
+        return account;
+    }
+
+    @PreAuthorize("hasAuthority('super_into')")
+    public Account createAccount(Authentication auth, Account account) {
+        try {
+        accountDao.createAccount(account);
+        return this.getAccount(auth, account.getAccountId());
+        } catch (DuplicateKeyException e) {
+            throw BadRequestException.duplicateKey(Constants.TYPE_ACCOUNT, "name", account.getName());
+        }
     }
 
 }

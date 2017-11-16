@@ -1,5 +1,5 @@
 /**
- * AccountClient.java
+ * MyBatisConfig.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -12,24 +12,18 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.x.api.account.client;
+package com.x.api.account.config;
 
-import org.springframework.cloud.netflix.feign.FeignClient;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import com.x.api.account.dto.AccountDto;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Oct 18, 2017
+ * @since Nov 14, 2017
  */
-@FeignClient(value = "account-server")
-public interface AccountClient {
-
-    @RequestMapping(method = RequestMethod.GET, value = "/oauth/check_token")
-    AccountDto checkToken(@RequestParam(value = "token") String token);
+@Configuration
+@MapperScan("com.x.api.account.mapper")
+public class MyBatisConfig {
 
 }

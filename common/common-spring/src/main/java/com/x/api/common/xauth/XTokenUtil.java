@@ -17,13 +17,17 @@
  */
 package com.x.api.common.xauth;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.niolex.commons.codec.SHAUtil;
+import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.util.DateTimeUtil;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import com.x.api.common.util.Constants;
 import com.x.api.common.xauth.token.SecuredXToken;
 
 /**
@@ -79,11 +83,36 @@ public class XTokenUtil {
         sb.append(toStr(principal.getUserId())).append(FIELD_SEP);
         sb.append(toStr(principal.getOpUserId())).append(FIELD_SEP);
         sb.append(toStr(principal.getOpAccountId())).append(FIELD_SEP);
-        sb.append(Joiner.on(ATTRI_SEP).join(principal.getPermissionList())).append(FIELD_SEP);
+        sb.append(Joiner.on(ATTRI_SEP).join(calculatePermission(principal))).append(FIELD_SEP);
         sb.append(toStr(System.currentTimeMillis() >> 4));
         String enc = SHAUtil.sha1(sb.toString(), secret).substring(0, 6);
         sb.append(FIELD_SEP).append(enc);
         return secureStr(sb.toString());
+    }
+
+    public static List<String> calculatePermission(XTokenPrincipal principal) {
+        List<AccountInfo> accountList = principal.getAccountList();
+        if (CollectionUtil.isEmpty(accountList)) {
+            return principal.getPermissionList();
+        }
+
+        AccountInfo info = principal.getAccountList().stream()
+                .filter(i -> i.getAccountId().equals(principal.getOpAccountId())).findFirst().orElse(null);
+
+        List<String> accountPerm = new ArrayList<>();
+        if (info != null) {
+            accountPerm.addAll(info.getPermissionList());
+        } else {
+            accountPerm.add(Constants.PERM_READ);
+        }
+
+        List<String> part1Perm = principal.getPermissionList().stream()
+                .filter(s -> !s.startsWith("account_")).collect(Collectors.toList());
+        List<String> part2Perm = principal.getPermissionList().stream()
+                .filter(s -> accountPerm.contains(s)).collect(Collectors.toList());
+        part1Perm.addAll(part2Perm);
+
+        return part1Perm;
     }
 
     private static String toStr(Long l) {
