@@ -13,7 +13,7 @@
 	<packaging>jar</packaging>
 
 	<name>config-service</name>
-	<description>Distributed/versioned configuration.</description>
+	<description>Distributed/Versioned configuration provider.</description>
 
 	<dependencies>
 		<dependency>

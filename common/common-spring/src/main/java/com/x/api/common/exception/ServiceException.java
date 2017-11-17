@@ -15,6 +15,7 @@
 package com.x.api.common.exception;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -91,6 +92,13 @@ public class ServiceException extends RuntimeException {
      */
     public void setExtension(Map<String, Object> extension) {
         this.extension = extension;
+    }
+
+    public void addExtraInfo(String key, String value) {
+        if (this.extension == null) {
+            this.extension = new TreeMap<>();
+        }
+        this.extension.put(key, value);
     }
 
 }

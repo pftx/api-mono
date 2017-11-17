@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.netflix.client.ClientException;
@@ -39,6 +38,7 @@ import com.x.api.common.dto.ErrorResponse;
 import com.x.api.common.spring.XUidFilter;
 import com.x.api.common.util.Constants;
 import com.x.api.common.util.ExceptionUtil;
+import com.x.api.common.util.MiscUtil;
 import com.x.api.common.xauth.XTokenPrincipal;
 import com.x.api.common.xauth.XTokenUtil;
 import com.x.api.common.xauth.token.SecuredXToken;
@@ -144,7 +144,7 @@ public class AccessFilter extends ZuulFilter {
         ctx.setSendZuulResponse(false);
         ctx.setResponseStatusCode(httpStatus);
         ctx.addZuulResponseHeader(CONTENT_TYPE, CONTENT_TYPE_VALUE);
-        ctx.addZuulResponseHeader(Constants.HEADER_X_ERR_MSG, errorMessage);
+        ctx.addZuulResponseHeader(Constants.HEADER_X_ERR_MSG, MiscUtil.httpHeaderEncode(errorMessage));
         try {
             ctx.setResponseBody(JacksonUtil.obj2Str(body));
         } catch (IOException e) {
@@ -164,9 +164,6 @@ public class AccessFilter extends ZuulFilter {
             String value = headers.nextElement();
             if ((value.toLowerCase().startsWith(OAuth2AccessToken.BEARER_TYPE.toLowerCase()))) {
                 String authHeaderValue = value.substring(OAuth2AccessToken.BEARER_TYPE.length()).trim();
-                // Add this here for the auth details later. Would be better to change the signature of this method.
-                request.setAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_TYPE,
-                        value.substring(0, OAuth2AccessToken.BEARER_TYPE.length()).trim());
                 int commaIndex = authHeaderValue.indexOf(',');
                 if (commaIndex > 0) {
                     authHeaderValue = authHeaderValue.substring(0, commaIndex);

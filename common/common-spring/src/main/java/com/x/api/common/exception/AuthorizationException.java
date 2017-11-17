@@ -38,6 +38,10 @@ public class AuthorizationException extends ServiceException {
         return new AuthorizationException(String.format(Constants.MSG_NO_PERM_TO_OP, entityType, id));
     }
 
+    public static AuthorizationException noPermissionToRead(String entityType, long id) {
+        return new AuthorizationException(String.format(Constants.MSG_NO_PERM_TO_READ, entityType, id));
+    }
+
     public AuthorizationException() {
         super(Constants.MSG_NO_PERMISSION);
     }

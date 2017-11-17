@@ -36,7 +36,7 @@ public class XTokenAuthenticationProvider implements AuthenticationProvider {
     private final String authenticationKey;
 
     /**
-     * Constructor
+     * Constructor.
      * 
      * @param authenticationKey the key used to verify X-Token
      */

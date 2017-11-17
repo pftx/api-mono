@@ -50,6 +50,11 @@ public class DateTimeHelper {
 
     public static final String DEFAULT_TIME_ZONE = "GMT+08:00";
 
+    public static final String GMT = "GMT";
+
+    private static final int MIN_LEN = DATE_FORMAT.length();
+    private static final int NORNAL_LEN = DEFAULT_TIME.length();
+
     private static final ConcurrentHashMap<String, DateFormat> formatterMap = new ConcurrentHashMap<>();
 
     public static DateFormat getFormatter(String timezone) {
@@ -74,11 +79,11 @@ public class DateTimeHelper {
         }
 
         DateFormat formatter = null;
-        if (date.length() > DEFAULT_TIME.length()) {
-            formatter = getFormatter(timezone);
+        if (date.length() > NORNAL_LEN) {
+            formatter = getFormatter(LONG_FORMAT, timezone);
         } else {
             formatter = getFormatter(DATE_TIME_FORMAT, timezone);
-            if (date.length() < DEFAULT_TIME.length()) {
+            if (date.length() < NORNAL_LEN) {
                 date = date + DEFAULT_TIME.substring(date.length());
             }
         }
@@ -87,6 +92,41 @@ public class DateTimeHelper {
             return formatter.parse(date);
         } catch (ParseException e) {
             throw new IllegalArgumentException("Invalid date: " + date + " start at " + e.getErrorOffset());
+        }
+    }
+
+    public static boolean isValidTimezone(String value) {
+        TimeZone zone = TimeZone.getTimeZone(value);
+        return !zone.getID().equals(GMT) || GMT.equalsIgnoreCase(value);
+    }
+
+    public static boolean isValidDate(String value) {
+        if (value.length() < MIN_LEN) {
+            return false;
+        }
+
+        if (value.length() < NORNAL_LEN) {
+            value = value + DEFAULT_TIME.substring(value.length());
+        }
+
+        String date = null;
+        String timezone = null;
+        if (value.length() > NORNAL_LEN) {
+            date = value.substring(0, NORNAL_LEN);
+            timezone = value.substring(NORNAL_LEN);
+            if (!isValidTimezone(timezone)) {
+                return false;
+            }
+        } else {
+            date = value;
+            timezone = DEFAULT_TIME_ZONE;
+        }
+
+        try {
+            parseDate(date, timezone);
+            return true;
+        } catch (Exception e) { // NOSONAR
+            return false;
         }
     }
 

@@ -14,7 +14,7 @@ security:
 logging:
   level:
     com.netflix.discovery: 'OFF'
-    org.springframework.cloud: 'DEBUG'
+    org.springframework.cloud: 'INFO'
 
 eureka:
   instance:
@@ -34,3 +34,6 @@ spring:
         git:
           uri: https://github.com/pftx/config-repo.git
           basedir: target/config
+  jackson:
+    serialization:
+      indent_output: true

@@ -1,6 +1,8 @@
 package com.x.api.common.helper;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -50,6 +52,22 @@ public class DateTimeHelperTest {
         Date d = DateTimeHelper.parseDate("2017-11-11", "GMT+02:00");
         DateFormat formatter = DateTimeHelper.getFormatter("Asia/Shanghai");
         assertEquals("2017-11-11 06:00:00CST", formatter.format(d));
+    }
+
+    @Test
+    public void testIsValidDate() throws Exception {
+        assertTrue(DateTimeHelper.isValidDate("1960-01-01"));
+        assertTrue(DateTimeHelper.isValidDate("1960-01-01 11"));
+        assertTrue(DateTimeHelper.isValidDate("1960-01-01 11:12"));
+        assertTrue(DateTimeHelper.isValidDate("1960-01-01 11:12:33"));
+        assertTrue(DateTimeHelper.isValidDate("1960-01-01 11:12:33CST"));
+        assertTrue(DateTimeHelper.isValidDate("1960-01-01 11:12:33EST"));
+        assertTrue(DateTimeHelper.isValidDate("1960-01-01 11:12:33Asia/Shanghai"));
+        Date d1 = DateTimeHelper.parseDate("1960-13-01", "GMT+02:00");
+        assertEquals("1961-01-01 06:00:00.000", DateTimeUtil.formatDate2LongStr(d1));
+        assertFalse(DateTimeHelper.isValidDate("1960-130-01"));
+        assertFalse(DateTimeHelper.isValidDate("20100101"));
+        assertFalse(DateTimeHelper.isValidDate("1960-01-01 11:12:33GDT"));
     }
 
 }

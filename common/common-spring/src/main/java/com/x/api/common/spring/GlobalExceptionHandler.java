@@ -39,6 +39,7 @@ import com.x.api.common.dto.ErrorResponse;
 import com.x.api.common.exception.ServiceException;
 import com.x.api.common.util.Constants;
 import com.x.api.common.util.ExceptionUtil;
+import com.x.api.common.util.MiscUtil;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
@@ -105,7 +106,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             logger.info("--YYY-- {} error occurred - {}, msg = {}", status, xUid, message);
         }
 
-        headers.add(Constants.HEADER_X_ERR_MSG, message);
+        headers.add(Constants.HEADER_X_ERR_MSG, MiscUtil.httpHeaderEncode(message));
         ErrorResponse body = new ErrorResponse(xUid, status.value(), message);
         body.setExtension(extension);
         return new ResponseEntity<Object>(body, headers, status);
@@ -124,7 +125,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String xUid = XUidFilter.getXUid();
         String message = ExceptionUtil.getExceptionMessage(ex);
         ErrorResponse body = new ErrorResponse(xUid, status.value(), message);
-        headers.add(Constants.HEADER_X_ERR_MSG, message);
+        headers.add(Constants.HEADER_X_ERR_MSG, MiscUtil.httpHeaderEncode(message));
         return new ResponseEntity<Object>(body, headers, status);
     }
 

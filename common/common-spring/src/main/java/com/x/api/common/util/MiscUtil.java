@@ -1,5 +1,5 @@
 /**
- * AccountType.java
+ * MiscUtil.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,15 +15,27 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.enums;
+package com.x.api.common.util;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 16, 2017
+ * @since Nov 17, 2017
  */
-public enum AccountType {
+public class MiscUtil {
 
-    Trader, Exchange, Funding;
+    public static int HEADER_MAX = 125;
+
+    public static String httpHeaderEncode(String msg) {
+        if (msg == null) {
+            return null;
+        }
+
+        if (msg.length() > HEADER_MAX) {
+            msg = msg.substring(0, HEADER_MAX) + "...";
+        }
+
+        return msg.replaceAll("\r*\n", "^");
+    }
 
 }

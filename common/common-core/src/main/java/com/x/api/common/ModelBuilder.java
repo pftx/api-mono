@@ -22,6 +22,8 @@ import org.apache.niolex.commons.codec.StringUtil;
 import com.google.common.base.CaseFormat;
 
 /**
+ * The helper class to generate Model and Dao Java code.
+ * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
  * @since Nov 14, 2017

@@ -28,8 +28,9 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8022}/eureka/
 
 # Zuul config.
-endpoints.routes.enabled: false
-endpoints.filters.enabled: false
+endpoints:
+  routes.enabled: false
+  filters.enabled: false
 
 zuul.routes:
   auth:

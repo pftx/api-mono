@@ -66,7 +66,9 @@ public class DtoUtil {
             Mod model = directCopy(cls, dto);
             return model;
         } catch (Exception e) {
-            throw new BadRequestException("Failed to transform Dto to Model.", e);
+            BadRequestException ex = new BadRequestException("Failed to parse request body.", e);
+            ex.addExtraInfo("debug_info", e.getMessage());
+            throw ex;
         }
     }
 

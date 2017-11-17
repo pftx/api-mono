@@ -39,7 +39,8 @@ public interface Constants {
     String MSG_BAD_X_TOKEN = "Invalid X-Token.";
     String MSG_BAD_REQUEST_VALIDATION = "Your request failed to pass validation.";
     String MSG_NO_PERMISSION = "You are not authorized to access this endpoint.";
-    String MSG_NO_PERM_TO_OP = "You are not authorized to access the %s with Id %d.";
+    String MSG_NO_PERM_TO_OP = "You are not authorized to operate the %s with Id %d.";
+    String MSG_NO_PERM_TO_READ = "You are not authorized to access the %s with Id %d.";
     String MSG_NOT_FOUND = "The %s with Id %d not found.";
 
     String PERM_SUPER_LOGIN = "super_into";
@@ -49,6 +50,7 @@ public interface Constants {
     String PERM_READ = "account_read";
 
     String TYPE_ACCOUNT = "account";
+    String TYPE_USER = "user";
 
     int INT_MILLION = 1000000;
 

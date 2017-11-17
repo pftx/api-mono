@@ -38,7 +38,7 @@ public abstract class BaseEnumTypeHandler<E extends Enum<E>> extends BaseTypeHan
      */
     @Override
     public E getNullableResult(ResultSet rs, String columnName) throws SQLException {
-        return getEnum(rs.getInt(columnName));
+        return rs.getObject(columnName) == null ? null : getEnum(rs.getInt(columnName));
     }
 
     /**
@@ -48,7 +48,7 @@ public abstract class BaseEnumTypeHandler<E extends Enum<E>> extends BaseTypeHan
      */
     @Override
     public E getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
-        return getEnum(rs.getInt(columnIndex));
+        return rs.getObject(columnIndex) == null ? null : getEnum(rs.getInt(columnIndex));
     }
 
     /**
@@ -58,7 +58,7 @@ public abstract class BaseEnumTypeHandler<E extends Enum<E>> extends BaseTypeHan
      */
     @Override
     public E getNullableResult(CallableStatement rs, int columnIndex) throws SQLException {
-        return getEnum(rs.getInt(columnIndex));
+        return rs.getObject(columnIndex) == null ? null : getEnum(rs.getInt(columnIndex));
     }
 
     /**

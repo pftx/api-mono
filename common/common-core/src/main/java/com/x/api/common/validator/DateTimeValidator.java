@@ -1,5 +1,5 @@
 /**
- * TimezoneValidator.java
+ * DateTimeValidator.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -17,18 +17,23 @@
  */
 package com.x.api.common.validator;
 
+import java.util.Objects;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.apache.niolex.commons.reflect.FieldUtil;
+import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
+
 import com.x.api.common.helper.DateTimeHelper;
-import com.x.api.common.validator.annotation.ValidTimezone;
+import com.x.api.common.validator.annotation.ValidDateTime;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 16, 2017
+ * @since Nov 17, 2017
  */
-public class TimezoneValidator implements ConstraintValidator<ValidTimezone, String> {
+public class DateTimeValidator implements ConstraintValidator<ValidDateTime, String> {
 
     /**
      * This is the override of super method.
@@ -36,7 +41,14 @@ public class TimezoneValidator implements ConstraintValidator<ValidTimezone, Str
      * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
      */
     @Override
-    public void initialize(ValidTimezone constraintAnnotation) {
+    public void initialize(ValidDateTime constraintAnnotation) {}
+
+    private void generateErrorContext(ConstraintValidatorContext context) {
+        if (context instanceof HibernateConstraintValidatorContext) {
+            HibernateConstraintValidatorContext h = (HibernateConstraintValidatorContext) context;
+            Object basePath = FieldUtil.getValue(h, "basePath");
+            h.addExpressionVariable("propertyPath", Objects.toString(basePath));
+        }
     }
 
     /**
@@ -46,7 +58,12 @@ public class TimezoneValidator implements ConstraintValidator<ValidTimezone, Str
      */
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return DateTimeHelper.isValidTimezone(value);
+        if (DateTimeHelper.isValidDate(value)) {
+            return true;
+        } else {
+            generateErrorContext(context);
+            return false;
+        }
     }
 
 }
