@@ -1,5 +1,5 @@
 /**
- * AccountInfo.java
+ * QueryConstants.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,41 +15,19 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.xauth;
+package com.x.api.common.dao;
 
-import java.io.Serializable;
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.x.api.common.enums.Status;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Oct 27, 2017
+ * @since Nov 19, 2017
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class AccountInfo implements Serializable {
+public interface QueryConstants {
 
-    /**
-     * Generated UID.
-     */
-    private static final long serialVersionUID = -70982143123098L;
+    String VISIBLE = "status < " + Status.Archive.ordinal();
 
-    @JsonProperty("account_id")
-    private Long accountId;
-
-    @JsonProperty("account_name")
-    private String accountName;
-
-    private String status;
-
-    @JsonProperty("permission_list")
-    private List<String> permissionList;
+    String ACTIVE = "status = " + Status.Active.ordinal();
 
 }

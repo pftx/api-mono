@@ -60,8 +60,8 @@ public class XTokenUtilTest {
         p.setUserName("root");
         p.setPermissionList(Lists.newArrayList("super", Constants.PERM_WRITE, Constants.PERM_READ));
         List<AccountInfo> accountList = Lists.newArrayList();
-        accountList.add(new AccountInfo(123L, "good", Lists.newArrayList(Constants.PERM_READ)));
-        accountList.add(new AccountInfo(321L, "bad", Lists.newArrayList("other")));
+        accountList.add(new AccountInfo(123L, "good", "active", Lists.newArrayList(Constants.PERM_READ)));
+        accountList.add(new AccountInfo(321L, "bad", "del", Lists.newArrayList("other")));
         p.setAccountList(accountList);
 
         SecuredXToken x = new SecuredXToken(p, "9d0500");

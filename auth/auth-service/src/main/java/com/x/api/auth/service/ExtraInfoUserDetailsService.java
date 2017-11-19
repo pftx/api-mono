@@ -35,7 +35,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.x.api.auth.dto.XInfoUser;
+import com.x.api.common.dao.QueryConstants;
 import com.x.api.common.enums.Status;
+import com.x.api.common.helper.EnumHelper;
 import com.x.api.common.xauth.AccountInfo;
 import com.x.api.common.xauth.XTokenPrincipal;
 
@@ -44,18 +46,19 @@ import com.x.api.common.xauth.XTokenPrincipal;
  * @version 1.0.0
  * @since Oct 27, 2017
  */
-public class ExtraInfoUserDetailsService implements UserDetailsService {
+public class ExtraInfoUserDetailsService implements UserDetailsService, QueryConstants {
 
     private static final Logger logger = LoggerFactory.getLogger(ExtraInfoUserDetailsService.class);
     private static final String SELECT_USER =
             "SELECT user_id, username, password, email, status, locked, expired, password_modified FROM users WHERE username = ?";
     private static final String SELECT_AUTHORITIES =
-            "SELECT authority FROM authorities WHERE username = ? AND status = 1";
+            "SELECT authority FROM authorities WHERE username = ? AND " + ACTIVE;
     private static final String SELECT_PERMISSIONS =
-            "SELECT permission FROM permissions JOIN authority_permissions USING (permission) WHERE authority IN (:authorities) AND status = 1";
+            "SELECT permission FROM permissions JOIN authority_permissions USING (permission) WHERE authority IN (:authorities) AND "
+                    + ACTIVE;
     private static final String SELECT_ACCOUNTS =
-            "SELECT account_id, name, permission FROM account JOIN user_account USING (account_id) WHERE user_id = ? AND status = 1 "
-                    + "ORDER BY last_login DESC";
+            "SELECT account_id, name, status, permission FROM account JOIN user_account USING (account_id) WHERE user_id = ? AND "
+                    + VISIBLE + " ORDER BY last_login DESC";
 
     private static final RowMapper<XInfoUser> BASIC_INFO_MAPPER = (rs, rowNum) -> {
         XTokenPrincipal ext = new XTokenPrincipal();
@@ -78,6 +81,7 @@ public class ExtraInfoUserDetailsService implements UserDetailsService {
 
     private static final RowMapper<AccountInfo> ACCOUNT_INFO_MAPPER = (rs, rowNum) -> {
         return new AccountInfo(rs.getLong("account_id"), rs.getString("name"),
+                EnumHelper.parseFromInt(Status.class, rs.getInt("status")).name(),
                 PERM_MAP.get(rs.getString("permission")));
     };
 

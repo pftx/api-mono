@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.x.api.common.dao.QueryConstants;
 import com.x.api.common.xauth.XTokenPrincipal;
 
 /**
@@ -29,16 +30,23 @@ import com.x.api.common.xauth.XTokenPrincipal;
  * @since Oct 31, 2017
  */
 @Service
-public class AuthService {
+public class AuthService implements QueryConstants {
 
     private static final String UPDATE_LAST_LOGIN =
             "UPDATE user_account SET last_login = NOW() WHERE user_id = ? AND account_id = ?";
+
+    private static final String CHECT_ACCOUNT_EXIST =
+            "SELECT 1 from account WHERE " + VISIBLE + " AND account_id = ?";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
     public boolean updateLastLogin(XTokenPrincipal info) {
         return jdbcTemplate.update(UPDATE_LAST_LOGIN, info.getOpUserId(), info.getOpAccountId()) > 0;
+    }
+
+    public boolean checkAccountId(long accountId) {
+        return !jdbcTemplate.queryForList(CHECT_ACCOUNT_EXIST, accountId).isEmpty();
     }
 
 }

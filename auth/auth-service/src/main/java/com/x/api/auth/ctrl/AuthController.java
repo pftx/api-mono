@@ -36,6 +36,7 @@ import com.x.api.auth.service.AuthService;
 import com.x.api.auth.util.TokenUtil;
 import com.x.api.common.dto.GenericResponse;
 import com.x.api.common.exception.BadRequestException;
+import com.x.api.common.util.Constants;
 import com.x.api.common.xauth.AccountInfo;
 import com.x.api.common.xauth.XTokenPrincipal;
 
@@ -77,12 +78,14 @@ public class AuthController {
     @RequestMapping(value = "/ext/token_info", method = RequestMethod.GET)
     @ApiOperation(value = "Get the current token information.", httpMethod = "GET", produces = "application/json")
     public OAuth2AccessToken postAccessToken(Principal principal) {
+        logger.info("/oauth/ext/token_info, user: {}.", principal.getName());
         return getAccessToken(principal);
     }
 
     @RequestMapping(value = "/ext/switch_account", method = RequestMethod.POST)
     @ApiOperation(value = "Swith the operating account.", httpMethod = "POST", produces = "application/json")
-    public OAuth2AccessToken switchUser(Principal principal, @RequestParam("op_account_id") Long opAccountId) {
+    public OAuth2AccessToken switchOperateAccount(Principal principal,
+            @RequestParam("op_account_id") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
 
@@ -100,6 +103,29 @@ public class AuthController {
                         principal.getName(), oldOpAccountId, opAccountId);
                 return accessToken;
             }
+        }
+
+        throw new BadRequestException("Invalid op_account_id.");
+    }
+
+    @RequestMapping(value = "/ext/super_into", method = RequestMethod.POST)
+    @ApiOperation(value = "Super into the specified account.", httpMethod = "POST", produces = "application/json")
+    public OAuth2AccessToken superInto(Principal principal, @RequestParam("op_account_id") Long opAccountId) {
+        OAuth2Authentication authentication = (OAuth2Authentication) principal;
+        OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
+
+        XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
+        if (info == null || info.getPermissionList() == null
+                || !info.getPermissionList().contains(Constants.PERM_SUPER_LOGIN)) {
+            throw new BadRequestException("Your token don't support super_info.");
+        }
+        if (authService.checkAccountId(opAccountId)) {
+            Long oldOpAccountId = info.getOpAccountId();
+            info.setOpAccountId(opAccountId);
+            tokenStore.storeAccessToken(accessToken, authentication);
+            logger.info("/oauth/ext/super_into, user: {} switched the operating account from {} to {}.",
+                    principal.getName(), oldOpAccountId, opAccountId);
+            return accessToken;
         }
 
         throw new BadRequestException("Invalid op_account_id.");
