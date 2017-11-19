@@ -25,14 +25,14 @@ REPLACE INTO `authority_permissions` (`authority`, `permission`)
 VALUES
     ('ROLE_SUPER_LOGIN', 'super_into'),
     ('ROLE_ADMIN', 'admin_metrics'),
-    ('ROLE_ADMIN', 'account_admin'),
+    ('ROLE_USER', 'account_admin'),
     ('ROLE_USER','account_write'),
     ('ROLE_USER','account_read');
 
 INSERT INTO `account` (`account_id`, `name`, `type`, `account_balance`)
 VALUES
-    (1,'Demo Account',2,54321),
-    (2,'Root Account',1,100);
+    (1,'Demo Account',2,543210000),
+    (2,'Root Account',1,100000000);
 
 REPLACE INTO `user_account` (`user_id`, `account_id`, `permission`)
 VALUES

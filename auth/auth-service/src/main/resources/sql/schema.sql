@@ -1,9 +1,10 @@
---create db
+# -- create db
 create database auth;
 CREATE USER 'dl_auth'@'%' IDENTIFIED BY 'I9dj@';
 GRANT SELECT,INSERT,UPDATE,DELETE ON auth.* TO 'dl_auth'@'%';
+use auth;
 
---create authentication table
+# -- create authentication table
 create table users (
   user_id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL UNIQUE KEY,
@@ -68,7 +69,7 @@ create table user_account (
   constraint PRIMARY KEY pk_user_account(user_id, account_id)
 );
 
--- create oauth2 table
+# -- create oauth2 table
 create table oauth_client_details (
   client_id VARCHAR(128) PRIMARY KEY,
   resource_ids VARCHAR(256),
