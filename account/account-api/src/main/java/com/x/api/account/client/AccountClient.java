@@ -29,7 +29,7 @@ import com.x.api.account.dto.AccountDto;
 @FeignClient(value = "account-server")
 public interface AccountClient {
 
-    @RequestMapping(method = RequestMethod.GET, value = "/oauth/check_token")
+    @RequestMapping(method = RequestMethod.GET, value = "/acct/accounts/")
     AccountDto checkToken(@RequestParam(value = "token") String token);
 
 }

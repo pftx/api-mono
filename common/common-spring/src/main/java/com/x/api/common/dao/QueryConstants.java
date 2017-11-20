@@ -17,17 +17,21 @@
  */
 package com.x.api.common.dao;
 
-import com.x.api.common.enums.Status;
-
 /**
+ * Status:  Inactive, Active, Archive, Deleted;
+ * Ordinal: 0         1       2        3
+ * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
  * @since Nov 19, 2017
  */
 public interface QueryConstants {
 
-    String VISIBLE = "status < " + Status.Archive.ordinal();
+    // Inactive & Active
+    String VISIBLE = "status < 2";
 
-    String ACTIVE = "status = " + Status.Active.ordinal();
+    String ACTIVE = "status = 1";
+
+    String NOT_DELETED = "status != 3";
 
 }

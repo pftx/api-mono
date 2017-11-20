@@ -30,6 +30,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import com.x.api.account.model.Account;
+import com.x.api.common.dao.QueryConstants;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
@@ -37,7 +38,7 @@ import com.x.api.account.model.Account;
  * @since Nov 14, 2017
  */
 @Mapper
-public interface AccountDao {
+public interface AccountDao extends QueryConstants {
 
     String SELECT_COL =
             "SELECT account_id, name, description, status, type, account_balance, currency_code, timezone, created, modified FROM account";
@@ -53,11 +54,11 @@ public interface AccountDao {
             @Result(column = "timezone", property = "timezone"),
             @Result(column = "created", property = "created"),
             @Result(column = "modified", property = "modified")})
-    @Select(SELECT_COL + " WHERE account_id = #{accountId} AND status < 3")
+    @Select(SELECT_COL + " WHERE account_id = #{accountId} AND " + VISIBLE)
     Account findById(@Param("accountId") long accountId);
 
     @ResultMap("resultMap$Account")
-    @Select(SELECT_COL + " WHERE name like #{name} AND status < 3")
+    @Select(SELECT_COL + " WHERE name like #{name} AND " + VISIBLE)
     List<Account> findByName(@Param("name") String name);
 
     @Insert("INSERT INTO account(name, description, status, type, account_balance, currency_code, timezone)"
@@ -65,13 +66,13 @@ public interface AccountDao {
     @Options(useGeneratedKeys = true, keyProperty = "accountId", keyColumn = "account_id")
     public long createAccount(Account account);
 
-    @Update("UPDATE account SET status = 3 WHERE account_id = #{accountId} AND status < 3")
+    @Update("UPDATE account SET status = 3 WHERE account_id = #{accountId} AND " + NOT_DELETED)
     int deleteAccount(@Param("accountId") long accountId);
 
-    @Update("UPDATE account SET status = 0 WHERE account_id = #{accountId} AND status = 1")
+    @Update("UPDATE account SET status = 0 WHERE account_id = #{accountId} AND " + ACTIVE)
     int deactivateAccount(@Param("accountId") long accountId);
 
-    @Update("UPDATE account SET name = #{name}, description = #{description}, type = #{type}, account_balance = #{accountBalance}, currency_code = #{currencyCode}, timezone = #{timezone} WHERE account_id = #{accountId} AND status < 3")
+    @Update("UPDATE account SET name = #{name}, description = #{description}, type = #{type}, account_balance = #{accountBalance}, currency_code = #{currencyCode}, timezone = #{timezone} WHERE account_id = #{accountId} AND " + VISIBLE)
     int updateAccount(Account account);
 
 }

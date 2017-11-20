@@ -18,6 +18,8 @@
 package com.x.api.auth.ctrl;
 
 import java.security.Principal;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,8 +66,11 @@ public class AuthController {
 
     @RequestMapping(value = "/hi", method = RequestMethod.GET)
     @ApiOperation(value = "Test the configuration profile.", httpMethod = "GET", produces = "application/json")
-    public GenericResponse<String> hi() {
-        return new GenericResponse<String>("Hello " + message);
+    public GenericResponse<Map<String, String>> hi(@RequestParam Map<String, String> requestParams) {
+        Map<String, String> info = new TreeMap<>();
+        info.putAll(requestParams);
+        info.put("ext.info", "Hello " + message);
+        return new GenericResponse<Map<String, String>>(info);
     }
 
     @RequestMapping(value = "/ext/user_info", method = RequestMethod.GET)

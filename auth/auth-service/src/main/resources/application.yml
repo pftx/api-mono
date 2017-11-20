@@ -8,7 +8,7 @@ management:
 
 security:
     sessions: stateless
-    filter-order: 5
+    filter-order: 15
 
 logging:
   level:
