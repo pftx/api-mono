@@ -12,29 +12,26 @@
  * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations under the License.
  */
-package com.x.api.common.validator;
+package com.x.api.common.validation.validator;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.apache.niolex.commons.reflect.FieldUtil;
 import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
 
 import com.google.common.base.Joiner;
-import com.x.api.common.validator.annotation.ValidEnum;
+import com.x.api.common.validation.annotation.ValidEnum;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
  * @since Nov 16, 2017
  */
-public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
+public class EnumValidator extends AllowNullConstraintValidator<ValidEnum, String> {
 
     private List<String> supportedList;
 
@@ -54,13 +51,13 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
         }
     }
 
-    private void generateErrorContext(ConstraintValidatorContext context) {
-        if (context instanceof HibernateConstraintValidatorContext) {
-            HibernateConstraintValidatorContext h = (HibernateConstraintValidatorContext) context;
-            Object basePath = FieldUtil.getValue(h, "basePath");
-            h.addExpressionVariable("propertyPath", Objects.toString(basePath));
-            h.addExpressionVariable("supported_list", Joiner.on(", ").join(supportedList));
-        }
+    /**
+     * This is the override of super method.
+     * @see com.x.api.common.validation.validator.AllowNullConstraintValidator#extraErrorContext(org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext)
+     */
+    @Override
+    protected void extraErrorContext(HibernateConstraintValidatorContext h) {
+        h.addExpressionVariable("supported_list", Joiner.on(", ").join(supportedList));
     }
 
     /**
@@ -69,7 +66,7 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, String> {
      * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
      */
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
+    public boolean isValidNonNull(String value, ConstraintValidatorContext context) {
         if (supportedList.isEmpty()) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate("Enum class not set for validator, value = " + value)

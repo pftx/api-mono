@@ -17,17 +17,22 @@
  */
 package com.x.api.account.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Preconditions;
 import com.x.api.account.mapper.AccountDao;
 import com.x.api.account.model.Account;
 import com.x.api.common.exception.BadRequestException;
 import com.x.api.common.exception.NotFoundException;
 import com.x.api.common.util.Constants;
+import com.x.api.common.util.MiscUtil;
+import com.x.api.common.util.ModelUtil;
 import com.x.api.common.xauth.XAuthUtil;
 
 /**
@@ -42,7 +47,7 @@ public class AccountService {
     private AccountDao accountDao;
 
     public Account getAccount(Authentication auth, long accountId) {
-        XAuthUtil.checkCanOperate(auth, accountId);
+        XAuthUtil.checkCanRead(auth, accountId);
         Account account = accountDao.findById(accountId);
         if (account == null) {
             throw NotFoundException.notFound(Constants.TYPE_ACCOUNT, accountId);
@@ -52,13 +57,28 @@ public class AccountService {
     }
 
     @PreAuthorize("hasAuthority('super_into')")
+    public List<Account> getAccountsByName(Authentication auth, String name) {
+        Preconditions.checkNotNull(name);
+        return accountDao.findByName(MiscUtil.sqlLike(name));
+    }
+
+    @PreAuthorize("hasAuthority('super_into')")
     public Account createAccount(Authentication auth, Account account) {
         try {
-        accountDao.createAccount(account);
-        return this.getAccount(auth, account.getAccountId());
+            accountDao.createAccount(account);
+            return this.getAccount(auth, account.getAccountId());
         } catch (DuplicateKeyException e) {
             throw BadRequestException.duplicateKey(Constants.TYPE_ACCOUNT, "name", account.getName());
         }
+    }
+
+    public Account updateAccount(Authentication auth, Account account) {
+        long accountId = account.getAccountId();
+        XAuthUtil.checkCanOperate(auth, accountId);
+        Account existing = accountDao.findById(accountId);
+        ModelUtil.prepareUpdate(existing, account);
+        accountDao.updateAccount(existing);
+        return this.getAccount(auth, account.getAccountId());
     }
 
 }

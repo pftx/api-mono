@@ -1,5 +1,5 @@
 /**
- * BaseModel.java
+ * NoUpdate.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,32 +15,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.model;
+package com.x.api.common.model.annotation;
 
-import java.util.Date;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.x.api.common.enums.Status;
-import com.x.api.common.json.EnumDeserializer;
-import com.x.api.common.model.annotation.NoUpdate;
-
-import lombok.Data;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 15, 2017
+ * @since Nov 21, 2017
  */
-@Data
-public class BaseModel {
-
-    @JsonDeserialize(using = EnumDeserializer.class)
-    private Status status;
-
-    @NoUpdate
-    private Date created;
-
-    @NoUpdate
-    private Date modified;
+@Documented
+@Target({ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NoUpdate {
 
 }

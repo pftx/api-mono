@@ -1,5 +1,5 @@
 /**
- * ValidEnum.java
+ * MyNotNull.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.validator.annotation;
+package com.x.api.common.validation.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -26,24 +26,22 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.x.api.common.validator.EnumValidator;
+import com.x.api.common.validation.validator.MyNotNullValidator;
 
 /**
+ * This annotation can generate meaningful error message instead of the standard NotNull annotation.
+ * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 16, 2017
+ * @since Nov 22, 2017
  */
 @Documented
-@Constraint(validatedBy = EnumValidator.class)
+@Constraint(validatedBy = {MyNotNullValidator.class})
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidEnum {
+public @interface MyNotNull {
 
-    String message() default "Invalid '${propertyPath}': ${validatedValue}, please use one of [${supported_list}].";
-
-    Class<?> type() default Object.class;
-
-    String[] supportedList() default {};
+    String message() default "The '${propertyPath}' can not be null.";
 
     Class<?>[] groups() default {};
 

@@ -17,16 +17,18 @@
  */
 package com.x.api.account.dto;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.x.api.common.dto.BaseDto;
 import com.x.api.common.dto.Timezone;
+import com.x.api.common.dto.annotation.Id;
 import com.x.api.common.enums.AccountType;
-import com.x.api.common.validator.annotation.ValidEnum;
-import com.x.api.common.validator.annotation.ValidTimezone;
+import com.x.api.common.validation.annotation.MyNotNull;
+import com.x.api.common.validation.annotation.ValidEnum;
+import com.x.api.common.validation.annotation.ValidTimezone;
+import com.x.api.common.validation.groups.Create;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -41,9 +43,11 @@ import lombok.EqualsAndHashCode;
 @JsonPropertyOrder({"accountId", "name", "type", "accountBalance", "currencyCode", "timezone"})
 public class AccountDto extends BaseDto implements Timezone {
 
+    @Id
+    @Pattern(regexp = "\\d+", message = "The 'accountId' must be integer.")
     private String accountId;
 
-    @NotNull(message = "The 'name' can not be null.")
+    @MyNotNull(groups = Create.class)
     @Size(min = 4, max = 126, message = "The length of 'name' must in range [4, 126].")
     @Pattern(regexp = "[\\w _\\-\\.'@]{4,126}", message = "The 'name' must be only character: [a-zA-Z_0-9 _-.'@].")
     private String name;
@@ -51,16 +55,20 @@ public class AccountDto extends BaseDto implements Timezone {
     @Size(min = 4, max = 255, message = "The length of 'description' must in range [4, 255].")
     private String description;
 
+    @MyNotNull(groups = Create.class)
     @ValidEnum(type = AccountType.class)
     private String type;
 
+    @MyNotNull(groups = Create.class)
     @Pattern(regexp = "\\d+\\.?\\d*", message = "The 'accountBalance' must be decimal.")
     private String accountBalance;
 
+    @MyNotNull(groups = Create.class)
     @Size(min = 3, max = 3, message = "The length of 'currencyCode' must be 3.")
     @Pattern(regexp = "[A-Z]{3}", message = "The 'currencyCode' must be all Upper Case.")
     private String currencyCode;
 
+    @MyNotNull(groups = Create.class)
     @Size(min = 3, max = 32, message = "The length of 'timezone' must in range [3, 32].")
     @ValidTimezone
     private String timezone;

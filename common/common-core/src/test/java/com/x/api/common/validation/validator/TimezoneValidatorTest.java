@@ -1,9 +1,11 @@
-package com.x.api.common.validator;
+package com.x.api.common.validation.validator;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import com.x.api.common.validation.validator.TimezoneValidator;
 
 public class TimezoneValidatorTest {
 

@@ -15,41 +15,19 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.validator;
+package com.x.api.common.validation.validator;
 
-import java.util.Objects;
-
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.apache.niolex.commons.reflect.FieldUtil;
-import org.hibernate.validator.constraintvalidation.HibernateConstraintValidatorContext;
-
 import com.x.api.common.helper.DateTimeHelper;
-import com.x.api.common.validator.annotation.ValidDateTime;
+import com.x.api.common.validation.annotation.ValidDateTime;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
  * @since Nov 17, 2017
  */
-public class DateTimeValidator implements ConstraintValidator<ValidDateTime, String> {
-
-    /**
-     * This is the override of super method.
-     * 
-     * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
-     */
-    @Override
-    public void initialize(ValidDateTime constraintAnnotation) {}
-
-    private void generateErrorContext(ConstraintValidatorContext context) {
-        if (context instanceof HibernateConstraintValidatorContext) {
-            HibernateConstraintValidatorContext h = (HibernateConstraintValidatorContext) context;
-            Object basePath = FieldUtil.getValue(h, "basePath");
-            h.addExpressionVariable("propertyPath", Objects.toString(basePath));
-        }
-    }
+public class DateTimeValidator extends AllowNullConstraintValidator<ValidDateTime, String> {
 
     /**
      * This is the override of super method.
@@ -57,7 +35,7 @@ public class DateTimeValidator implements ConstraintValidator<ValidDateTime, Str
      * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
      */
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
+    public boolean isValidNonNull(String value, ConstraintValidatorContext context) {
         if (DateTimeHelper.isValidDate(value)) {
             return true;
         } else {

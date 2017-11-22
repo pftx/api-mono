@@ -1,5 +1,5 @@
 /**
- * BaseModel.java
+ * Create.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,32 +15,18 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.model;
-
-import java.util.Date;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.x.api.common.enums.Status;
-import com.x.api.common.json.EnumDeserializer;
-import com.x.api.common.model.annotation.NoUpdate;
-
-import lombok.Data;
+package com.x.api.common.validation.groups;
 
 /**
+ * Create Bean Validation group.
+ * <p/>
+ * Unless this validation group is explicitly defined, it will not work. Most {@value NotNull} constraints should belong
+ * to this group.
+ *
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 15, 2017
+ * @since Nov 22, 2017
  */
-@Data
-public class BaseModel {
-
-    @JsonDeserialize(using = EnumDeserializer.class)
-    private Status status;
-
-    @NoUpdate
-    private Date created;
-
-    @NoUpdate
-    private Date modified;
+public interface Create {
 
 }

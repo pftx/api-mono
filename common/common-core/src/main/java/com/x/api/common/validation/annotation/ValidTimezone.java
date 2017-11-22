@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.validator.annotation;
+package com.x.api.common.validation.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -26,9 +26,11 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.x.api.common.validator.TimezoneValidator;
+import com.x.api.common.validation.validator.TimezoneValidator;
 
 /**
+ * {@code null} elements are considered valid.
+ * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
  * @since Nov 16, 2017

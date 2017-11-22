@@ -20,8 +20,10 @@ package com.x.api.common.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.x.api.common.validation.annotation.MyNotNull;
+import com.x.api.common.validation.annotation.ValidEnum;
+import com.x.api.common.validation.groups.Create;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.x.api.common.validator.annotation.ValidEnum;
 
 import lombok.Data;
 
@@ -36,8 +38,10 @@ import lombok.Data;
 @JsonPropertyOrder({ "status", "created", "modified" })
 public class BaseDto {
 
+    @MyNotNull(groups = Create.class)
     @ValidEnum(supportedList = {"Active", "Inactive"})
     private String status;
+
     private String created;
     private String modified;
 

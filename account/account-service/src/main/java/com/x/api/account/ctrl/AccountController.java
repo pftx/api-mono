@@ -17,17 +17,24 @@
  */
 package com.x.api.account.ctrl;
 
+import java.security.Principal;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
+import javax.validation.groups.Default;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.x.api.account.dto.AccountDto;
@@ -35,6 +42,8 @@ import com.x.api.account.model.Account;
 import com.x.api.account.service.AccountService;
 import com.x.api.common.dto.GenericResponse;
 import com.x.api.common.util.DtoUtil;
+import com.x.api.common.util.ValidationUtil;
+import com.x.api.common.validation.groups.Create;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -61,6 +70,13 @@ public class AccountController {
         return new GenericResponse<String>("Hello " + message);
     }
 
+    @RequestMapping(value = "/user_info", method = RequestMethod.GET)
+    @ApiOperation(value = "Get the current login user information.", httpMethod = "GET", produces = "application/json")
+    public Principal user(Principal user) {
+        logger.info("/acct/accounts/user_info, user: {}.", user.getName());
+        return user;
+    }
+
     @RequestMapping(value = "/{accountId:[\\d]+}", method = RequestMethod.GET)
     @ApiOperation(value = "Get the account information by the specified accountId.", httpMethod = "GET",
             produces = "application/json")
@@ -69,15 +85,38 @@ public class AccountController {
         return DtoUtil.transform(AccountDto.class, accountService.getAccount(auth, accountId));
     }
 
+    @RequestMapping(value = "", method = RequestMethod.GET)
+    @ApiOperation(value = "Get all the accounts contains the specified name.", httpMethod = "GET",
+            produces = "application/json")
+    public List<AccountDto> getAccountsByName(Authentication auth, @RequestParam("name") String name) {
+        return accountService.getAccountsByName(auth, name).stream().map(a -> DtoUtil.transform(AccountDto.class, a))
+                .collect(Collectors.toList());
+    }
+
     @RequestMapping(value = "", method = RequestMethod.POST)
     @ApiOperation(value = "Create new account.", httpMethod = "POST",
             produces = "application/json")
-    public AccountDto createAccount(Authentication auth, @Valid @RequestBody AccountDto req) {
+    public AccountDto createAccount(Authentication auth,
+            @Validated(value = {Create.class, Default.class}) @RequestBody AccountDto req) {
         logger.info("POST /acct/accounts, user: {}.", auth.getName());
         req.setAccountId(null);
         Account account = DtoUtil.transform(Account.class, req);
         Account created = accountService.createAccount(auth, account);
         return DtoUtil.transform(AccountDto.class, created);
+    }
+
+    @RequestMapping(value = "/{accountId:[\\d]+}", method = RequestMethod.PUT)
+    @ApiOperation(value = "Update an account.", httpMethod = "PUT",
+            produces = "application/json")
+    public AccountDto updateAccount(Authentication auth, @PathVariable("accountId") long accountId,
+            @Valid @RequestBody AccountDto req) {
+        logger.info("PUT /acct/accounts/{}, user: {}.", accountId, auth.getName());
+        ValidationUtil.validateId(req, accountId);
+
+        Account account = DtoUtil.transform(Account.class, req);
+        account.setAccountId(accountId);
+        Account updated = accountService.updateAccount(auth, account);
+        return DtoUtil.transform(AccountDto.class, updated);
     }
 
 }

@@ -15,29 +15,19 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.validator;
+package com.x.api.common.validation.validator;
 
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 import com.x.api.common.helper.DateTimeHelper;
-import com.x.api.common.validator.annotation.ValidTimezone;
+import com.x.api.common.validation.annotation.ValidTimezone;
 
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
  * @since Nov 16, 2017
  */
-public class TimezoneValidator implements ConstraintValidator<ValidTimezone, String> {
-
-    /**
-     * This is the override of super method.
-     * 
-     * @see javax.validation.ConstraintValidator#initialize(java.lang.annotation.Annotation)
-     */
-    @Override
-    public void initialize(ValidTimezone constraintAnnotation) {
-    }
+public class TimezoneValidator extends AllowNullConstraintValidator<ValidTimezone, String> {
 
     /**
      * This is the override of super method.
@@ -45,7 +35,7 @@ public class TimezoneValidator implements ConstraintValidator<ValidTimezone, Str
      * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
      */
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
+    public boolean isValidNonNull(String value, ConstraintValidatorContext context) {
         return DateTimeHelper.isValidTimezone(value);
     }
 

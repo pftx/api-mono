@@ -17,6 +17,8 @@
  */
 package com.x.api.common.util;
 
+import java.beans.Introspector;
+
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
@@ -36,6 +38,21 @@ public class MiscUtil {
         }
 
         return msg.replaceAll("\r*\n", "^");
+    }
+
+    public static String sqlLike(String raw) {
+        if (!raw.startsWith("%")) {
+            raw = "%" + raw;
+        }
+        if (!raw.endsWith("%")) {
+            raw = raw + "%";
+        }
+        return raw;
+    }
+
+    public static String getAttributeName(String methodName) {
+        // Assume the method starts with either get or is.
+        return Introspector.decapitalize(methodName.substring(methodName.startsWith("is") ? 2 : 3));
     }
 
 }

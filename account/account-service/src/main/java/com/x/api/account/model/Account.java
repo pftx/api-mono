@@ -45,7 +45,7 @@ public class Account extends BaseModel implements Timezone {
     private AccountType type;
     @JsonDeserialize(using = MoneyMicrosDeserializer.class)
     @JsonSerialize(using = MoneyMicrosSerializer.class)
-    private long accountBalance;
+    private Long accountBalance;
     private String currencyCode;
     private String timezone;
 

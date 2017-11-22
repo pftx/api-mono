@@ -72,7 +72,9 @@ public interface AccountDao extends QueryConstants {
     @Update("UPDATE account SET status = 0 WHERE account_id = #{accountId} AND " + ACTIVE)
     int deactivateAccount(@Param("accountId") long accountId);
 
-    @Update("UPDATE account SET name = #{name}, description = #{description}, type = #{type}, account_balance = #{accountBalance}, currency_code = #{currencyCode}, timezone = #{timezone} WHERE account_id = #{accountId} AND " + VISIBLE)
+    @Update("UPDATE account SET name = #{name}, description = #{description}, type = #{type, javaType=AccountType, jdbcType=TINYINT},"
+            + " account_balance = #{accountBalance}, currency_code = #{currencyCode}, timezone = #{timezone},"
+            + " status = #{status, javaType=status, jdbcType=TINYINT} WHERE account_id = #{accountId} AND " + VISIBLE)
     int updateAccount(Account account);
 
 }

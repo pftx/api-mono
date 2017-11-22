@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.x.api.auth.dto.XInfoUser;
 import com.x.api.auth.service.AuthService;
 import com.x.api.auth.util.TokenUtil;
 import com.x.api.common.dto.GenericResponse;
@@ -93,17 +94,15 @@ public class AuthController {
             @RequestParam("op_account_id") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
-
         XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
+
         if (info == null || info.getAccountList() == null) {
             throw new BadRequestException("Your token don't support switch_account.");
         }
         for (AccountInfo ai : info.getAccountList()) {
             if (ai.getAccountId().equals(opAccountId)) {
                 Long oldOpAccountId = info.getOpAccountId();
-                info.setOpAccountId(opAccountId);
-                authService.updateLastLogin(info);
-                tokenStore.storeAccessToken(accessToken, authentication);
+                updateOpAccountId(authentication, accessToken, opAccountId);
                 logger.info("/oauth/ext/switch_account, user: {} switched the operating account from {} to {}.",
                         principal.getName(), oldOpAccountId, opAccountId);
                 return accessToken;
@@ -113,21 +112,32 @@ public class AuthController {
         throw new BadRequestException("Invalid op_account_id.");
     }
 
+    private void updateOpAccountId(OAuth2Authentication authentication, OAuth2AccessToken accessToken,
+            Long opAccountId) {
+        XInfoUser user = (XInfoUser) authentication.getPrincipal();
+        XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
+
+        user.getExtension().setOpAccountId(opAccountId);
+        info.setOpAccountId(opAccountId);
+
+        authService.updateLastLogin(info);
+        tokenStore.storeAccessToken(accessToken, authentication);
+    }
+
     @RequestMapping(value = "/ext/super_into", method = RequestMethod.POST)
     @ApiOperation(value = "Super into the specified account.", httpMethod = "POST", produces = "application/json")
     public OAuth2AccessToken superInto(Principal principal, @RequestParam("op_account_id") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
-
         XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
+
         if (info == null || info.getPermissionList() == null
                 || !info.getPermissionList().contains(Constants.PERM_SUPER_LOGIN)) {
-            throw new BadRequestException("Your token don't support super_info.");
+            throw new BadRequestException("Your token don't support super_into.");
         }
         if (authService.checkAccountId(opAccountId)) {
             Long oldOpAccountId = info.getOpAccountId();
-            info.setOpAccountId(opAccountId);
-            tokenStore.storeAccessToken(accessToken, authentication);
+            updateOpAccountId(authentication, accessToken, opAccountId);
             logger.info("/oauth/ext/super_into, user: {} switched the operating account from {} to {}.",
                     principal.getName(), oldOpAccountId, opAccountId);
             return accessToken;

@@ -1,5 +1,5 @@
 /**
- * ValidDateTime.java
+ * Id.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.validator.annotation;
+package com.x.api.common.dto.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -23,26 +23,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
-
-import com.x.api.common.validator.DateTimeValidator;
-
 /**
+ * Used to mark the Id field.
+ * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 17, 2017
+ * @since Nov 21, 2017
  */
 @Documented
-@Constraint(validatedBy = DateTimeValidator.class)
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ValidDateTime {
-
-    String message() default "Invalid '${propertyPath}': ${validatedValue}, please use format 'yyyy-MM-dd HH:mm:ss'.";
-
-    Class<?>[] groups() default {};
-
-    Class<? extends Payload>[] payload() default {};
+public @interface Id {
 
 }
