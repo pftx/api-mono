@@ -21,6 +21,8 @@ import java.security.Principal;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.validation.constraints.NotNull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -51,6 +54,7 @@ import io.swagger.annotations.ApiOperation;
  * @since Oct 27, 2017
  */
 @RestController
+@Validated
 @RequestMapping(value = "/oauth", method = {RequestMethod.GET, RequestMethod.POST})
 public class AuthController {
 
@@ -91,7 +95,7 @@ public class AuthController {
     @RequestMapping(value = "/ext/switch_account", method = RequestMethod.POST)
     @ApiOperation(value = "Swith the operating account.", httpMethod = "POST", produces = "application/json")
     public OAuth2AccessToken switchOperateAccount(Principal principal,
-            @RequestParam("op_account_id") Long opAccountId) {
+            @RequestParam("op_account_id") @NotNull(message="The 'op_account_id' can not be null.") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
         XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
@@ -126,7 +130,8 @@ public class AuthController {
 
     @RequestMapping(value = "/ext/super_into", method = RequestMethod.POST)
     @ApiOperation(value = "Super into the specified account.", httpMethod = "POST", produces = "application/json")
-    public OAuth2AccessToken superInto(Principal principal, @RequestParam("op_account_id") Long opAccountId) {
+    public OAuth2AccessToken superInto(Principal principal,
+            @RequestParam("op_account_id") @NotNull(message = "The 'op_account_id' can not be null.") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
         XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);

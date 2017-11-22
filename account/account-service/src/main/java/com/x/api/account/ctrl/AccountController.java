@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
 
 import org.slf4j.Logger;
@@ -53,6 +54,7 @@ import io.swagger.annotations.ApiOperation;
  * @since Oct 27, 2017
  */
 @RestController
+@Validated
 @RequestMapping(value = "/acct/accounts")
 public class AccountController {
 
@@ -88,7 +90,9 @@ public class AccountController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ApiOperation(value = "Get all the accounts contains the specified name.", httpMethod = "GET",
             produces = "application/json")
-    public List<AccountDto> getAccountsByName(Authentication auth, @RequestParam("name") String name) {
+    public List<AccountDto> getAccountsByName(Authentication auth,
+            @RequestParam("name") @Size(min = 3, max = 126,
+                    message = "The length of 'name' must in range [3, 126].") String name) {
         return accountService.getAccountsByName(auth, name).stream().map(a -> DtoUtil.transform(AccountDto.class, a))
                 .collect(Collectors.toList());
     }
@@ -117,6 +121,18 @@ public class AccountController {
         account.setAccountId(accountId);
         Account updated = accountService.updateAccount(auth, account);
         return DtoUtil.transform(AccountDto.class, updated);
+    }
+
+    @RequestMapping(value = "/{accountId:[\\d]+}", method = RequestMethod.DELETE)
+    @ApiOperation(value = "Delete an account.", httpMethod = "DELETE",
+            produces = "application/json")
+    public GenericResponse<String> deleteAccount(Authentication auth, @PathVariable("accountId") long accountId) {
+        boolean deleted = accountService.deleteAccount(auth, accountId);
+        if (deleted) {
+            return new GenericResponse<String>("Account deleted.");
+        } else {
+            return new GenericResponse<String>("Account not found.");
+        }
     }
 
 }

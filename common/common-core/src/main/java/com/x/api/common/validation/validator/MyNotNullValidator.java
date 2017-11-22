@@ -26,14 +26,14 @@ import com.x.api.common.validation.annotation.MyNotNull;
  * @version 1.0.0
  * @since Nov 22, 2017
  */
-public class MyNotNullValidator extends AllowNullConstraintValidator<MyNotNull, String> {
+public class MyNotNullValidator extends AllowNullConstraintValidator<MyNotNull, Object> {
 
     /**
      * This is the override of super method.
      * @see com.x.api.common.validation.validator.AllowNullConstraintValidator#isValidNonNull(java.lang.Object, javax.validation.ConstraintValidatorContext)
      */
     @Override
-    public boolean isValidNonNull(String value, ConstraintValidatorContext context) {
+    public boolean isValidNonNull(Object value, ConstraintValidatorContext context) {
         return false;
     }
 
@@ -42,7 +42,7 @@ public class MyNotNullValidator extends AllowNullConstraintValidator<MyNotNull, 
      * @see com.x.api.common.validation.validator.AllowNullConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
      */
     @Override
-    public boolean isValid(String value, ConstraintValidatorContext context) {
+    public boolean isValid(Object value, ConstraintValidatorContext context) {
         if (value == null) {
             generateErrorContext(context);
             return false;

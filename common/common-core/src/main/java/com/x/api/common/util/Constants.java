@@ -37,7 +37,10 @@ public interface Constants {
     String MSG_NO_ACCESS_TOKEN = "Access token is required to access this resource.";
     String MSG_BAD_ACCESS_TOKEN = "Invalid access token.";
     String MSG_BAD_X_TOKEN = "Invalid X-Token.";
+    String MSG_BAD_REQUEST_FORMAT = "Your request is not formatted according to our specification.";
     String MSG_BAD_REQUEST_VALIDATION = "Your request failed to pass validation.";
+    String MSG_BAD_PARAMS_VALIDATION = "One or more of your parameters failed to pass validation.";
+    String MSG_BAD_PARAMS_FORMAT = "One or more of your parameters not formatted according to our specification.";
     String MSG_NO_PERMISSION = "You are not authorized to access this endpoint.";
     String MSG_NO_PERM_TO_OP = "You are not authorized to operate the %s with Id %d.";
     String MSG_NO_PERM_TO_READ = "You are not authorized to access the %s with Id %d.";

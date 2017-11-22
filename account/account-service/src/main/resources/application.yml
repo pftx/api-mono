@@ -15,7 +15,7 @@ logging:
     com.netflix.discovery: 'OFF'
     org.mybatis: 'DEBUG'
     org.apache.ibatis: 'DEBUG'
-    com.x.api: 'DEBUG'
+    com.x.api.account: 'DEBUG'
   pattern:
     level: "%X{mdcData} %5p"
 

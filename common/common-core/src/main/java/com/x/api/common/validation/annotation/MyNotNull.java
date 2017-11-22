@@ -37,7 +37,7 @@ import com.x.api.common.validation.validator.MyNotNullValidator;
  */
 @Documented
 @Constraint(validatedBy = {MyNotNullValidator.class})
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MyNotNull {
 

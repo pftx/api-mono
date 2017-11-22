@@ -76,9 +76,17 @@ public class AccountService {
         long accountId = account.getAccountId();
         XAuthUtil.checkCanOperate(auth, accountId);
         Account existing = accountDao.findById(accountId);
+        if (existing == null) {
+            throw NotFoundException.notFound(Constants.TYPE_ACCOUNT, accountId);
+        }
         ModelUtil.prepareUpdate(existing, account);
         accountDao.updateAccount(existing);
         return this.getAccount(auth, account.getAccountId());
+    }
+
+    public boolean deleteAccount(Authentication auth, long accountId) {
+        XAuthUtil.checkCanOperate(auth, accountId);
+        return accountDao.deleteAccount(accountId) > 0;
     }
 
 }

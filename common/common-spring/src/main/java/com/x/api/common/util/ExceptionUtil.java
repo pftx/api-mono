@@ -37,7 +37,7 @@ public class ExceptionUtil {
             msg = e.getCause().getMessage();
         }
         if (msg == null) {
-            String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, e.getClass().getName());
+            String name = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, e.getClass().getSimpleName());
             return "We encountered " + name.replaceAll("_", " ") + ".";
         }
         return msg;
