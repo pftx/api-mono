@@ -17,10 +17,12 @@
  */
 package com.x.api.common.validation.groups;
 
+import com.x.api.common.validation.annotation.MyNotNull;
+
 /**
  * Create Bean Validation group.
- * <p/>
- * Unless this validation group is explicitly defined, it will not work. Most {@value NotNull} constraints should belong
+ * <br>
+ * Unless this validation group is explicitly defined, it will not work. Most {@link MyNotNull} constraints should belong
  * to this group.
  *
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>

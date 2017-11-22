@@ -34,7 +34,7 @@ public class DateTimeHelper {
     /**
      * The long data time format, including time zone info.
      */
-    public static final String LONG_FORMAT = "yyyy-MM-dd HH:mm:ssz";
+    public static final String LONG_FORMAT = "yyyy-MM-dd HH:mm:ssXXX";
 
     /**
      * The date time format, including details to seconds.
@@ -62,7 +62,7 @@ public class DateTimeHelper {
     }
 
     public static DateFormat getFormatter(String format, String timezone) {
-        TimeZone zone = TimeZone.getTimeZone(timezone);
+        TimeZone zone = getTimeZone(timezone);
         String key = format + "&" + zone.getID();
         DateFormat dateFormat = formatterMap.get(key);
         if (dateFormat == null) {
@@ -73,57 +73,56 @@ public class DateTimeHelper {
         return dateFormat;
     }
 
+    public static TimeZone getTimeZone(String value) {
+        value = value.trim();
+        if (value.startsWith("+") || value.startsWith("-")) {
+            value = GMT + value;
+        }
+
+        TimeZone zone = TimeZone.getTimeZone(value);
+        if (zone.getID().equals(GMT) && !GMT.equalsIgnoreCase(value)) {
+            throw new IllegalArgumentException("Invalid timezone: '" + value + "'.");
+        }
+
+        return zone;
+    }
+
+    public static boolean isValidTimezone(String value) {
+        try {
+            getTimeZone(value);
+            return true;
+        } catch (Exception e) { // NOSONAR
+            return false;
+        }
+    }
+
     public static Date parseDate(String date, String timezone) {
         if (date == null) {
             return null;
         }
 
-        DateFormat formatter = null;
         if (date.length() > NORNAL_LEN) {
-            formatter = getFormatter(LONG_FORMAT, timezone);
-        } else {
-            formatter = getFormatter(DATE_TIME_FORMAT, timezone);
-            if (date.length() < NORNAL_LEN) {
-                date = date + DEFAULT_TIME.substring(date.length());
-            }
+            // If date contains time zone info, we override the provided time zone.
+            timezone = date.substring(NORNAL_LEN);
+            date = date.substring(0, NORNAL_LEN);
+        } else if (date.length() < MIN_LEN) {
+            throw new IllegalArgumentException("Invalid date: '" + date + "' too short.");
+        } else if (date.length() < NORNAL_LEN) {
+            // Paste the default time part.
+            date = date + DEFAULT_TIME.substring(date.length());
         }
+        DateFormat formatter = getFormatter(DATE_TIME_FORMAT, timezone);
 
         try {
             return formatter.parse(date);
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid date: " + date + " start at " + e.getErrorOffset());
+            throw new IllegalArgumentException("Invalid date: '" + date + "' start at " + e.getErrorOffset());
         }
-    }
-
-    public static boolean isValidTimezone(String value) {
-        TimeZone zone = TimeZone.getTimeZone(value);
-        return !zone.getID().equals(GMT) || GMT.equalsIgnoreCase(value);
     }
 
     public static boolean isValidDate(String value) {
-        if (value.length() < MIN_LEN) {
-            return false;
-        }
-
-        if (value.length() < NORNAL_LEN) {
-            value = value + DEFAULT_TIME.substring(value.length());
-        }
-
-        String date = null;
-        String timezone = null;
-        if (value.length() > NORNAL_LEN) {
-            date = value.substring(0, NORNAL_LEN);
-            timezone = value.substring(NORNAL_LEN);
-            if (!isValidTimezone(timezone)) {
-                return false;
-            }
-        } else {
-            date = value;
-            timezone = DEFAULT_TIME_ZONE;
-        }
-
         try {
-            parseDate(date, timezone);
+            parseDate(value, DEFAULT_TIME_ZONE);
             return true;
         } catch (Exception e) { // NOSONAR
             return false;

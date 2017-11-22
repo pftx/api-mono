@@ -19,7 +19,7 @@ package com.x.api.common.validation.groups;
 
 /**
  * Update Bean Validation group.
- * <p/>
+ * <br>
  * Unless this validation group is explicitly defined, it will not work.
  * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
