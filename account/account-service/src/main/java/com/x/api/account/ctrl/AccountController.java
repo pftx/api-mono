@@ -135,4 +135,26 @@ public class AccountController {
         }
     }
 
+    @RequestMapping(value = "/{accountId:[\\d]+}/activate", method = RequestMethod.PATCH)
+    @ApiOperation(value = "Activate an account.", httpMethod = "PATCH", produces = "application/json")
+    public GenericResponse<String> activateAccount(Authentication auth, @PathVariable("accountId") long accountId) {
+        boolean activated = accountService.activateAccount(auth, accountId);
+        if (activated) {
+            return new GenericResponse<String>("Account activated.");
+        } else {
+            return new GenericResponse<String>("Account not found.");
+        }
+    }
+
+    @RequestMapping(value = "/{accountId:[\\d]+}/deactivate", method = RequestMethod.PATCH)
+    @ApiOperation(value = "Deactivate an account.", httpMethod = "PATCH", produces = "application/json")
+    public GenericResponse<String> deactivateAccount(Authentication auth, @PathVariable("accountId") long accountId) {
+        boolean deactivated = accountService.deactivateAccount(auth, accountId);
+        if (deactivated) {
+            return new GenericResponse<String>("Account deactivated.");
+        } else {
+            return new GenericResponse<String>("Account not found.");
+        }
+    }
+
 }

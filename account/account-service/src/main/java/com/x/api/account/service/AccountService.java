@@ -89,4 +89,14 @@ public class AccountService {
         return accountDao.deleteAccount(accountId) > 0;
     }
 
+    @PreAuthorize("hasAuthority('super_into')")
+    public boolean activateAccount(Authentication auth, long accountId) {
+        return accountDao.activateAccount(accountId) > 0;
+    }
+
+    @PreAuthorize("hasAuthority('super_into')")
+    public boolean deactivateAccount(Authentication auth, long accountId) {
+        return accountDao.deactivateAccount(accountId) > 0;
+    }
+
 }
