@@ -37,7 +37,7 @@ import com.x.api.common.validation.validator.EnumValidator;
  */
 @Documented
 @Constraint(validatedBy = EnumValidator.class)
-@Target({ElementType.METHOD, ElementType.FIELD})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEnum {
 

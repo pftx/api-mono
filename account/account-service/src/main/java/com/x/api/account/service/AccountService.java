@@ -57,9 +57,11 @@ public class AccountService {
     }
 
     @PreAuthorize("hasAuthority('super_into')")
-    public List<Account> getAccountsByName(Authentication auth, String name) {
+    public List<Account> getAccountsByName(Authentication auth, String name, int offset, int limit, String sortBy,
+            String sortOrder) {
         Preconditions.checkNotNull(name);
-        return accountDao.findByName(MiscUtil.sqlLike(name));
+        return accountDao.findByName(MiscUtil.sqlLike(name), offset, limit, MiscUtil.fieldNameToDbColumn(sortBy),
+                sortOrder);
     }
 
     @PreAuthorize("hasAuthority('super_into')")

@@ -19,6 +19,8 @@ package com.x.api.common.util;
 
 import java.beans.Introspector;
 
+import com.google.common.base.CaseFormat;
+
 /**
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
@@ -48,6 +50,10 @@ public class MiscUtil {
             raw = raw + "%";
         }
         return raw;
+    }
+
+    public static String fieldNameToDbColumn(String fieldName) {
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldName);
     }
 
     public static String getAttributeName(String methodName) {

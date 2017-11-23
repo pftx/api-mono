@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
 import javax.validation.groups.Default;
@@ -41,9 +42,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.x.api.account.dto.AccountDto;
 import com.x.api.account.model.Account;
 import com.x.api.account.service.AccountService;
+import com.x.api.common.dto.CollectionResponse;
+import com.x.api.common.dto.CollectionResponseBuilder;
 import com.x.api.common.dto.GenericResponse;
 import com.x.api.common.util.DtoUtil;
 import com.x.api.common.util.ValidationUtil;
+import com.x.api.common.validation.annotation.ValidLimit;
+import com.x.api.common.validation.annotation.ValidOffset;
+import com.x.api.common.validation.annotation.ValidOrder;
+import com.x.api.common.validation.annotation.ValidSortBy;
 import com.x.api.common.validation.groups.Create;
 
 import io.swagger.annotations.ApiOperation;
@@ -58,6 +65,7 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping(value = "/acct/accounts")
 public class AccountController {
 
+    private static final String MSG_NAME_LEN = "The length of 'name' must in range [3, 126].";
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     @Value("${message:default}")
@@ -90,11 +98,21 @@ public class AccountController {
     @RequestMapping(value = "", method = RequestMethod.GET)
     @ApiOperation(value = "Get all the accounts contains the specified name.", httpMethod = "GET",
             produces = "application/json")
-    public List<AccountDto> getAccountsByName(Authentication auth,
-            @RequestParam("name") @Size(min = 3, max = 126,
-                    message = "The length of 'name' must in range [3, 126].") String name) {
-        return accountService.getAccountsByName(auth, name).stream().map(a -> DtoUtil.transform(AccountDto.class, a))
+    public CollectionResponse<AccountDto> getAccountsByName(Authentication auth,
+            @RequestParam("name") @Size(min = 3, max = 126, message = MSG_NAME_LEN) String name,
+            @RequestParam(name = "offset", defaultValue = "0") @ValidOffset int offset,
+            @RequestParam(name = "limit", defaultValue = "100") @ValidLimit int limit,
+            @RequestParam(name = "sortBy",
+                    defaultValue = "accountId") @ValidSortBy(dto = AccountDto.class) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = "asc") @ValidOrder String sortOrder,
+            HttpServletRequest request) {
+        List<AccountDto> list = accountService.getAccountsByName(auth, name, offset, limit + 1, sortBy, sortOrder)
+                .stream()
+                .map(a -> DtoUtil.transform(AccountDto.class, a))
                 .collect(Collectors.toList());
+        return CollectionResponseBuilder.withHttpServletRequest(request)
+                .withPageInfo(offset, limit, sortBy, sortOrder)
+                .build("accounts", list);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)

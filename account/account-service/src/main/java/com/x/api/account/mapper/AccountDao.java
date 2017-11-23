@@ -58,8 +58,9 @@ public interface AccountDao extends QueryConstants {
     Account findById(@Param("accountId") long accountId);
 
     @ResultMap("resultMap$Account")
-    @Select(SELECT_COL + " WHERE name like #{name} AND " + VISIBLE)
-    List<Account> findByName(@Param("name") String name);
+    @Select(SELECT_COL + " WHERE name like #{name} AND " + VISIBLE + PAGING)
+    List<Account> findByName(@Param("name") String name, @Param("offset") int offset, @Param("limit") int limit,
+            @Param("orderBy") String sortBy, @Param("orderDirection") String sortOrder);
 
     @Insert("INSERT INTO account(name, description, status, type, account_balance, currency_code, timezone)"
             + " VALUES (#{name}, #{description}, #{status, javaType=status, jdbcType=TINYINT}, #{type, javaType=AccountType, jdbcType=TINYINT}, #{accountBalance}, #{currencyCode}, #{timezone})")

@@ -34,4 +34,6 @@ public interface QueryConstants {
 
     String NOT_DELETED = "status != 3";
 
+    String PAGING = " ORDER BY ${orderBy} ${orderDirection} LIMIT ${offset}, ${limit}";
+
 }

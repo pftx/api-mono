@@ -95,7 +95,7 @@ public class AuthController {
     @RequestMapping(value = "/ext/switch_account", method = RequestMethod.POST)
     @ApiOperation(value = "Swith the operating account.", httpMethod = "POST", produces = "application/json")
     public OAuth2AccessToken switchOperateAccount(Principal principal,
-            @RequestParam("op_account_id") @NotNull(message="The 'op_account_id' can not be null.") Long opAccountId) {
+            @RequestParam("opAccountId") @NotNull(message = "The 'opAccountId' can not be null.") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
         XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
@@ -113,7 +113,7 @@ public class AuthController {
             }
         }
 
-        throw new BadRequestException("Invalid op_account_id.");
+        throw new BadRequestException("Invalid opAccountId.");
     }
 
     private void updateOpAccountId(OAuth2Authentication authentication, OAuth2AccessToken accessToken,
@@ -131,7 +131,7 @@ public class AuthController {
     @RequestMapping(value = "/ext/super_into", method = RequestMethod.POST)
     @ApiOperation(value = "Super into the specified account.", httpMethod = "POST", produces = "application/json")
     public OAuth2AccessToken superInto(Principal principal,
-            @RequestParam("op_account_id") @NotNull(message = "The 'op_account_id' can not be null.") Long opAccountId) {
+            @RequestParam("opAccountId") @NotNull(message = "The 'opAccountId' can not be null.") Long opAccountId) {
         OAuth2Authentication authentication = (OAuth2Authentication) principal;
         OAuth2AccessToken accessToken = tokenStore.getAccessToken(authentication);
         XTokenPrincipal info = TokenUtil.extractExtraInfo(accessToken);
@@ -148,7 +148,7 @@ public class AuthController {
             return accessToken;
         }
 
-        throw new BadRequestException("Invalid op_account_id.");
+        throw new BadRequestException("Invalid opAccountId.");
     }
 
     @RequestMapping(value = "/ext/revoke_access_token", method = RequestMethod.POST)

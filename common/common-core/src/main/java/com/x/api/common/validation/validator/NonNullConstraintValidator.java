@@ -1,5 +1,5 @@
 /**
- * AllowNullConstraintValidator.java
+ * NonNullConstraintValidator.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -22,23 +22,24 @@ import java.lang.annotation.Annotation;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Allow null value as valid.
+ * Consider Null value as invalid.
  * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 22, 2017
+ * @since Nov 23, 2017
  */
-public abstract class AllowNullConstraintValidator<A extends Annotation, T>
+public abstract class NonNullConstraintValidator<A extends Annotation, T>
         extends ErrorContextConstraintValidator<A, T> {
 
     /**
-     * This is the override of super method.
-     * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
-     */
+    * This is the override of super method.
+    * @see javax.validation.ConstraintValidator#isValid(java.lang.Object, javax.validation.ConstraintValidatorContext)
+    */
     @Override
     public boolean isValid(T value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true;
+            generateErrorContext(context);
+            return false;
         }
 
         return isValidNonNull(value, context);

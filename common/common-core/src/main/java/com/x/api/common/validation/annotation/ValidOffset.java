@@ -1,5 +1,5 @@
 /**
- * MyNotNull.java
+ * ValidOffset.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -25,23 +25,22 @@ import java.lang.annotation.Target;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
-
-import com.x.api.common.validation.validator.MyNotNullValidator;
+import javax.validation.constraints.Min;
 
 /**
- * This annotation can generate meaningful error message instead of the standard NotNull annotation.
- * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 22, 2017
+ * @since Nov 23, 2017
  */
 @Documented
-@Constraint(validatedBy = {MyNotNullValidator.class})
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Min(value = 0, message = ValidOffset.MSG_OFFSET_MIN)
+@Constraint(validatedBy = {})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MyNotNull {
+public @interface ValidOffset {
+    String MSG_OFFSET_MIN = "The 'offset' must be greater than or equal to 0.";
 
-    String message() default "The '${propertyPath}' can not be null.";
+    String message() default "";
 
     Class<?>[] groups() default {};
 

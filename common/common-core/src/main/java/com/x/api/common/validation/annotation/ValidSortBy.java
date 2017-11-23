@@ -1,5 +1,5 @@
 /**
- * MyNotNull.java
+ * ValidSortBy.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -26,22 +26,22 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.x.api.common.validation.validator.MyNotNullValidator;
+import com.x.api.common.validation.validator.SortByValidator;
 
 /**
- * This annotation can generate meaningful error message instead of the standard NotNull annotation.
- * 
  * @author <a href="mailto:pftx@live.com">Lex Xie</a>
  * @version 1.0.0
- * @since Nov 22, 2017
+ * @since Nov 23, 2017
  */
 @Documented
-@Constraint(validatedBy = {MyNotNullValidator.class})
-@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER, ElementType.ANNOTATION_TYPE})
+@Constraint(validatedBy = {SortByValidator.class})
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MyNotNull {
+public @interface ValidSortBy {
 
-    String message() default "The '${propertyPath}' can not be null.";
+    Class<?> dto();
+
+    String message() default "Invalid 'sortBy': ${validatedValue}, please use one of [${supported_list}] case sensitive.";
 
     Class<?>[] groups() default {};
 

@@ -17,10 +17,10 @@
  */
 package com.x.api.common.spring;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
-        Map<String, Object> extension = new HashMap<String, Object>();
+        Map<String, Object> extension = new TreeMap<String, Object>();
         for (ConstraintViolation<?> err : ex.getConstraintViolations()) {
             Iterator<Node> iterator = err.getPropertyPath().iterator();
             Node param = null;
@@ -106,7 +106,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
         List<ObjectError> allErrors = ex.getBindingResult().getAllErrors();
-        Map<String, Object> extension = new HashMap<String, Object>();
+        Map<String, Object> extension = new TreeMap<String, Object>();
         for (ObjectError err : allErrors) {
             if (err instanceof FieldError) {
                 extension.put(((FieldError) err).getField(), err.getDefaultMessage());
@@ -124,7 +124,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
             HttpHeaders headers, HttpStatus status, WebRequest request) {
-        Map<String, Object> extension = new HashMap<String, Object>();
+        Map<String, Object> extension = new TreeMap<String, Object>();
         Throwable cause = ex.getCause();
         if (cause instanceof JsonProcessingException) {
             JsonProcessingException jmE = (JsonProcessingException) cause;
@@ -142,7 +142,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        Map<String, Object> extension = new HashMap<String, Object>();
+        Map<String, Object> extension = new TreeMap<String, Object>();
         if (ex instanceof MethodArgumentTypeMismatchException) {
             MethodArgumentTypeMismatchException maE = (MethodArgumentTypeMismatchException) ex;
             extension.put(maE.getName(), maE.getValue());
