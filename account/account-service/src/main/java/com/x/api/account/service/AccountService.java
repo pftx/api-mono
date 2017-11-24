@@ -20,10 +20,14 @@ package com.x.api.account.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
 import com.x.api.account.mapper.AccountDao;
@@ -46,6 +50,7 @@ public class AccountService {
     @Autowired
     private AccountDao accountDao;
 
+    @Cacheable(cacheNames = "acct/account", key = "#accountId")
     public Account getAccount(Authentication auth, long accountId) {
         XAuthUtil.checkCanRead(auth, accountId);
         Account account = accountDao.findById(accountId);
@@ -74,6 +79,8 @@ public class AccountService {
         }
     }
 
+    @CachePut(cacheNames = "acct/account", key = "#account.accountId")
+    @Transactional
     public Account updateAccount(Authentication auth, Account account) {
         long accountId = account.getAccountId();
         XAuthUtil.checkCanOperate(auth, accountId);
@@ -83,19 +90,22 @@ public class AccountService {
         }
         ModelUtil.prepareUpdate(existing, account);
         accountDao.updateAccount(existing);
-        return this.getAccount(auth, account.getAccountId());
+        return accountDao.findById(account.getAccountId());
     }
 
+    @CacheEvict(cacheNames = "acct/account", key = "#accountId")
     public boolean deleteAccount(Authentication auth, long accountId) {
         XAuthUtil.checkCanOperate(auth, accountId);
         return accountDao.deleteAccount(accountId) > 0;
     }
 
+    @CacheEvict(cacheNames = "acct/account", key = "#accountId")
     @PreAuthorize("hasAuthority('super_into')")
     public boolean activateAccount(Authentication auth, long accountId) {
         return accountDao.activateAccount(accountId) > 0;
     }
 
+    @CacheEvict(cacheNames = "acct/account", key = "#accountId")
     @PreAuthorize("hasAuthority('super_into')")
     public boolean deactivateAccount(Authentication auth, long accountId) {
         return accountDao.deactivateAccount(accountId) > 0;

@@ -32,7 +32,7 @@ token:
   accessTokenValiditySeconds: 7200
   refreshTokenValiditySeconds: 72000
 
-# JDBC config.
+# Data layer config.
 spring:
   redis:
     host: localhost

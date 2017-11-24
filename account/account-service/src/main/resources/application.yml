@@ -33,10 +33,15 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8022}/eureka/
 
-# JDBC config.
+# Data layer config.
 spring:
+  redis:
+    host: localhost
+    port: 6379
   datasource:
     url: jdbc:mysql://localhost/auth?verifyServerCertificate=false&useSSL=false
     username: dl_auth
     password: I9dj@
     driver-class-name: com.mysql.jdbc.Driver
+  cache:
+    type: Redis
