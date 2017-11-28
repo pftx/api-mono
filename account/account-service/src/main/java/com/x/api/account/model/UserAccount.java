@@ -1,5 +1,5 @@
 /**
- * BaseModel.java
+ * UserAccount.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -15,7 +15,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.x.api.common.model;
+package com.x.api.account.model;
 
 import java.util.Date;
 
@@ -25,29 +25,24 @@ import com.x.api.common.enums.Status;
 import com.x.api.common.json.DateTimeDeserializer;
 import com.x.api.common.json.DateTimeSerializer;
 import com.x.api.common.json.EnumDeserializer;
-import com.x.api.common.model.annotation.NoUpdate;
 
 import lombok.Data;
 
 /**
- * @author <a href="mailto:pftx@live.com">Lex Xie</a>
+ * @author <a href="mailto:xiejiyun@foxmail.com">Xie, Jiyun</a>
  * @version 1.0.0
- * @since Nov 15, 2017
+ * @since 2017年11月28日
  */
 @Data
-public class BaseModel {
+public class UserAccount {
 
+    private long userId;
+    private String username;
     @JsonDeserialize(using = EnumDeserializer.class)
     private Status status;
-
-    @NoUpdate
+    private String permission;
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonSerialize(using = DateTimeSerializer.class)
-    private Date created;
-
-    @NoUpdate
-    @JsonDeserialize(using = DateTimeDeserializer.class)
-    @JsonSerialize(using = DateTimeSerializer.class)
-    private Date modified;
+    private Date lastLogin;
 
 }

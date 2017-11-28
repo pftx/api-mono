@@ -56,6 +56,19 @@ public class DateTimeHelper {
     private static final int NORNAL_LEN = DEFAULT_TIME.length();
 
     private static final ConcurrentHashMap<String, DateFormat> formatterMap = new ConcurrentHashMap<>();
+    private static final ThreadLocal<String> timezoneContext = new ThreadLocal<String>();
+
+    public static void setTimezoneContext(String timezone) {
+        timezoneContext.set(timezone);
+    }
+
+    public static DateFormat getContextFormatter() {
+        String timezone = timezoneContext.get();
+        if (timezone == null) {
+            throw new IllegalStateException("The timezone context is null.");
+        }
+        return getFormatter(timezone);
+    }
 
     public static DateFormat getFormatter(String timezone) {
         return getFormatter(LONG_FORMAT, timezone);
@@ -94,6 +107,10 @@ public class DateTimeHelper {
         } catch (Exception e) { // NOSONAR
             return false;
         }
+    }
+
+    public static Date parseDate(String date) {
+        return parseDate(date, timezoneContext.get());
     }
 
     public static Date parseDate(String date, String timezone) {

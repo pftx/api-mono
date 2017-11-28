@@ -17,12 +17,19 @@
  */
 package com.x.api.common.util;
 
-import java.text.DateFormat;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.apache.niolex.commons.collection.CollectionUtil;
 import org.apache.niolex.commons.compress.JacksonUtil;
+import org.apache.niolex.commons.reflect.FieldUtil;
 
 import com.x.api.common.dto.BaseDto;
 import com.x.api.common.dto.Timezone;
+import com.x.api.common.dto.annotation.IgnoreInput;
 import com.x.api.common.exception.BadRequestException;
 import com.x.api.common.exception.ServiceException;
 import com.x.api.common.helper.DateTimeHelper;
@@ -35,40 +42,69 @@ import com.x.api.common.model.BaseModel;
  */
 public class DtoUtil {
 
+    public static <Dto, Mod> List<Dto> transformList(Class<Dto> cls, List<Mod> model, String timezone) {
+        if (CollectionUtil.isEmpty(model)) {
+            return Collections.emptyList();
+        }
+        Function<Mod, Dto> func = m -> toDto(cls, m, timezone);
+        return model.stream().map(func).collect(Collectors.toList());
+    }
+
     public static <Dto extends BaseDto, Mod extends BaseModel> Dto transform(Class<Dto> cls, Mod model) {
-        return transform(cls, model,
+        return toDto(cls, model,
                 model instanceof Timezone ? ((Timezone) model).getTimezone() : DateTimeHelper.DEFAULT_TIME_ZONE);
     }
 
-    public static <Dto extends BaseDto, Mod extends BaseModel> Dto transform(Class<Dto> cls, Mod model,
-            String timezone) {
-        Dto dto = directCopy(cls, model);
-        DateFormat formatter = DateTimeHelper.getFormatter(timezone);
-        if (model.getCreated() != null) {
-            dto.setCreated(formatter.format(model.getCreated()));
+    public static <Dto, Mod> Dto toDto(Class<Dto> cls, Mod model, String timezone) {
+        try {
+            DateTimeHelper.setTimezoneContext(timezone);
+            return directCopy(cls, model);
+        } finally {
+            if (timezone != null) {
+                DateTimeHelper.setTimezoneContext(null);
+            }
         }
-        if (model.getModified() != null) {
-            dto.setModified(formatter.format(model.getModified()));
-        }
-        return dto;
     }
 
     public static <Dto extends BaseDto, Mod extends BaseModel> Mod transform(Class<Mod> cls, Dto dto) {
-        return transform(cls, dto,
-                dto instanceof Timezone ? ((Timezone) dto).getTimezone() : DateTimeHelper.DEFAULT_TIME_ZONE);
+        return toModel(cls, dto, dto instanceof Timezone ? ((Timezone) dto).getTimezone() : DateTimeHelper.DEFAULT_TIME_ZONE);
     }
 
-    public static <Dto extends BaseDto, Mod extends BaseModel> Mod transform(Class<Mod> cls, Dto dto,
-            String timezone) {
+    /**
+     * When transform Dto to Model, we ignore all the fields marked with annotation {@link IgnoreInput}.
+     * 
+     * @param cls
+     *            the model class
+     * @param dto
+     *            the dto bean
+     * @param timezone
+     *            the time zone used to parse date and time
+     * @return the transformed model object
+     */
+    public static <Dto, Mod> Mod toModel(Class<Mod> cls, Dto dto, String timezone) {
+        List<Field> allFields = FieldUtil.getAllFields(dto.getClass());
+
         try {
-            dto.setCreated(null);
-            dto.setModified(null);
+            DateTimeHelper.setTimezoneContext(timezone);
+            for (Field fi : allFields) {
+                if (!fi.isAnnotationPresent(IgnoreInput.class)) {
+                    continue;
+                }
+
+                fi.setAccessible(true);
+                fi.set(dto, null);
+            }
+
             Mod model = directCopy(cls, dto);
             return model;
         } catch (Exception e) {
             BadRequestException ex = new BadRequestException("Failed to parse request body.", e);
             ex.addExtraInfo("debug_info", e.getMessage());
             throw ex;
+        } finally {
+            if (timezone != null) {
+                DateTimeHelper.setTimezoneContext(null);
+            }
         }
     }
 

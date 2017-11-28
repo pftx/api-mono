@@ -17,9 +17,12 @@
  */
 package com.x.api.common;
 
+import java.util.Set;
+
 import org.apache.niolex.commons.codec.StringUtil;
 
 import com.google.common.base.CaseFormat;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * The helper class to generate Model and Dao Java code.
@@ -31,23 +34,32 @@ import com.google.common.base.CaseFormat;
 public class ModelBuilder {
 
     public static final String COL_LIST =
-            "account_id, name, description, status, type, account_balance, currency_code, timezone, created, modified";
+            "user_id, username, status, permission, last_login";
     public static final String TYPE_LIST =
-            "long, String,String,               int,      int,       long, String,          String,  Date, Date";
-    public static final String CLS_NAME = "Account";
+            "long,     String, Status, String, Date";
+    public static final String CLS_NAME = "UserAccount";
+    
+    public static final Set<String> BASE_M = ImmutableSet.of("status", "created", "modified");
 
     public static void main(String[] args) {
         String[] columns = COL_LIST.split(" *, *");
         String[] types = TYPE_LIST.split(" *, *");
-        String tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, CLS_NAME);
-        String varName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, CLS_NAME);
+        final String tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, CLS_NAME);
+        final String varName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, CLS_NAME);
+        final String keyColumn = columns[0];
+        final String keyProperty = columnToCamel(keyColumn);
 
-        System.out.println("public class " + CLS_NAME + " {");
+        System.out.println("@Data");
+        System.out.println("@EqualsAndHashCode(callSuper=true)");
+        System.out.println("public class " + CLS_NAME + " extends BaseModel {");
         System.out.println();
 
         for (int i = 0; i < columns.length; ++i) {
             String col = columns[i];
             String typ = types[i];
+            if (BASE_M.contains(col)) {
+                continue;
+            }
             System.out.println("private " + typ + " " + columnToCamel(col) + ";");
         }
         System.out.println();
@@ -56,7 +68,7 @@ public class ModelBuilder {
         System.out.println();
 
         System.out.println("@Mapper");
-        System.out.println("public interface " + CLS_NAME + "Dao {");
+        System.out.println("public interface " + CLS_NAME + "Dao extends QueryConstants {");
         System.out.println();
         System.out.println("String SELECT_COL =\"SELECT " + COL_LIST + " FROM " + tableName + "\";");
         System.out.println();
@@ -69,47 +81,62 @@ public class ModelBuilder {
                 System.out.println(",");
             }
         }
-        String param1 = columnToCamel(columns[0]);
         System.out.println("})");
-        System.out.println("@Select(SELECT_COL + \" WHERE " + columns[0] + " = #{" + param1 + "} AND status < 3\")");
-        System.out.println(CLS_NAME + " findById(@Param(\"" + param1 + "\") " + types[0] + " " + param1 + ");");
+        System.out.println("@Select(SELECT_COL + \" WHERE " + keyColumn + " = #{" + keyProperty + "} AND \" + VISIBLE)");
+        System.out.println(CLS_NAME + " findById(@Param(\"" + keyProperty + "\") " + types[0] + " " + keyProperty + ");");
         System.out.println();
 
         String param2 = columnToCamel(columns[1]);
         System.out.println("@ResultMap(\"resultMap$" + CLS_NAME + "\")");
-        System.out.println("@Select(SELECT_COL + \" WHERE " + columns[1] + " like #{" + param2 + "} AND status < 3\")");
+        System.out.println("@Select(SELECT_COL + \" WHERE " + columns[1] + " like #{" + param2 + "} AND \" + VISIBLE + PAGING)");
         System.out.println(
-                "List<" + CLS_NAME + "> findByName(@Param(\"" + param2 + "\") " + types[1] + " " + param2 + ");");
+                "List<" + CLS_NAME + "> findByName(@Param(\"" + param2 + "\") " + types[1] + " " + param2 + ", @Param(\"offset\") int offset, @Param(\"limit\") int limit,\n" + 
+                        "            @Param(\"orderBy\") String sortBy, @Param(\"orderDirection\") String sortOrder);");
         System.out.println();
 
-        System.out.print("@Insert(\"INSERT INTO " + tableName + "(\" + SELECT_COL + \") VALUES (");
-        for (int i = 0; i < columns.length; ++i) {
+        System.out.print("@Insert(\"INSERT INTO " + tableName + "(");
+        for (int i = 1; i < columns.length; ++i) {
             String col = columns[i];
-            System.out.print("#{" + columnToCamel(col) + "}");
-            if (i < columns.length - 1) {
-                System.out.print(", ");
+            if (BASE_M.contains(col)) {
+                continue;
             }
+            System.out.print(col + ", ");
         }
-        System.out.println(")\")");
-        System.out.println("public void create" + CLS_NAME + "(" + CLS_NAME + " " + varName + ");");
+        System.out.print("status)\"\n + \"VALUES (");
+        for (int i = 1; i < columns.length; ++i) {
+            String col = columns[i];
+            if (BASE_M.contains(col)) {
+                continue;
+            }
+            System.out.print("#{" + columnToCamel(col) + "}, ");
+        }
+        System.out.println("#{status, javaType=status, jdbcType=TINYINT})\")");
+        System.out.println("@Options(useGeneratedKeys = true, keyProperty = \""+keyProperty+"\", keyColumn = \""+keyColumn+"\")");
+        System.out.println("public long create" + CLS_NAME + "(" + CLS_NAME + " " + varName + ");");
         System.out.println();
 
-        System.out.println("@Update(\"UPDATE " + tableName + " SET status = 3 WHERE " + columns[0] + " = #{" + param1
-                + "} AND status < 3\")");
-        System.out.println("int delete" + CLS_NAME + "(@Param(\"" + param1 + "\") " + types[0] + " " + param1 + ");");
+        System.out.println("@Update(\"UPDATE " + tableName + " SET status = 3 WHERE " + keyColumn + " = #{" + keyProperty
+                + "} AND \" + NOT_DELETED)");
+        System.out.println("int delete" + CLS_NAME + "(@Param(\"" + keyProperty + "\") " + types[0] + " " + keyProperty + ");");
         System.out.println();
 
-        System.out.println("@Update(\"UPDATE " + tableName + " SET status = 0 WHERE " + columns[0] + " = #{" + param1
-                + "} AND status = 1\")");
+        System.out.println("@Update(\"UPDATE " + tableName + " SET status = 0 WHERE " + keyColumn + " = #{" + keyProperty
+                + "}\")");
         System.out
-                .println("int deactivate" + CLS_NAME + "(@Param(\"" + param1 + "\") " + types[0] + " " + param1 + ");");
+                .println("int deactivate" + CLS_NAME + "(@Param(\"" + keyProperty + "\") " + types[0] + " " + keyProperty + ");");
+        System.out.println();
+        
+        System.out.println("@Update(\"UPDATE " + tableName + " SET status = 1 WHERE " + keyColumn + " = #{" + keyProperty
+                + "}\")");
+        System.out
+        .println("int activate" + CLS_NAME + "(@Param(\"" + keyProperty + "\") " + types[0] + " " + keyProperty + ");");
         System.out.println();
 
         System.out.print("@Update(\"UPDATE " + tableName + " SET ");
         int real = 0;
         for (int i = 1; i < columns.length; ++i) {
             String col = columns[i];
-            if (StringUtil.isIn(col, "status", "created", "modified")) {
+            if (StringUtil.isIn(col, "created", "modified")) {
                 continue;
             }
             if (real++ != 0) {
@@ -117,8 +144,8 @@ public class ModelBuilder {
             }
             System.out.print(col + " = #{" + columnToCamel(col) + "}");
         }
-        System.out.println(" WHERE " + columns[0] + " = #{" + param1
-                + "} AND status < 3\")");
+        System.out.println(" WHERE " + keyColumn + " = #{" + keyProperty
+                + "} AND \" + VISIBLE)");
         System.out
                 .println("int update" + CLS_NAME + "(" + CLS_NAME + " " + varName + ");");
         System.out.println();

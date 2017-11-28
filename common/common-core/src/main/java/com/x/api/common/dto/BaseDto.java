@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.x.api.common.dto.annotation.IgnoreInput;
 import com.x.api.common.validation.annotation.MyNotNull;
 import com.x.api.common.validation.annotation.ValidDateTime;
 import com.x.api.common.validation.annotation.ValidEnum;
@@ -44,9 +45,11 @@ public class BaseDto {
     private String status;
 
     @ValidDateTime
+    @IgnoreInput
     private String created;
 
     @ValidDateTime
+    @IgnoreInput
     private String modified;
 
 }

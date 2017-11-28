@@ -54,7 +54,7 @@ public class ExtraInfoUserDetailsService implements UserDetailsService, QueryCon
     private static final String SELECT_AUTHORITIES =
             "SELECT authority FROM authorities WHERE username = ? AND " + ACTIVE;
     private static final String SELECT_PERMISSIONS =
-            "SELECT permission FROM permissions JOIN authority_permissions USING (permission) WHERE authority IN (:authorities) AND "
+            "SELECT DISTINCT permission FROM permissions JOIN authority_permissions USING (permission) WHERE authority IN (:authorities) AND "
                     + ACTIVE;
     private static final String SELECT_ACCOUNTS =
             "SELECT account_id, name, status, permission FROM account JOIN user_account USING (account_id) WHERE user_id = ? AND "

@@ -31,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Preconditions;
 import com.x.api.account.mapper.AccountDao;
+import com.x.api.account.mapper.UserAccountDao;
 import com.x.api.account.model.Account;
+import com.x.api.account.model.UserAccount;
 import com.x.api.common.exception.BadRequestException;
 import com.x.api.common.exception.NotFoundException;
 import com.x.api.common.util.Constants;
@@ -50,6 +52,9 @@ public class AccountService {
     @Autowired
     private AccountDao accountDao;
 
+    @Autowired
+    private UserAccountDao userAccountDao;
+
     @Cacheable(cacheNames = "acct/account", key = "#accountId")
     public Account getAccount(Authentication auth, long accountId) {
         XAuthUtil.checkCanRead(auth, accountId);
@@ -65,8 +70,7 @@ public class AccountService {
     public List<Account> getAccountsByName(Authentication auth, String name, int offset, int limit, String sortBy,
             String sortOrder) {
         Preconditions.checkNotNull(name);
-        return accountDao.findByName(MiscUtil.sqlLike(name), offset, limit, MiscUtil.fieldNameToDbColumn(sortBy),
-                sortOrder);
+        return accountDao.findByName(MiscUtil.sqlLike(name), offset, limit, MiscUtil.fieldNameToDbColumn(sortBy), sortOrder);
     }
 
     @PreAuthorize("hasAuthority('super_into')")
@@ -109,6 +113,11 @@ public class AccountService {
     @PreAuthorize("hasAuthority('super_into')")
     public boolean deactivateAccount(Authentication auth, long accountId) {
         return accountDao.deactivateAccount(accountId) > 0;
+    }
+
+    public List<UserAccount> getUsersByAccountId(Authentication auth, long accountId) {
+        XAuthUtil.checkCanRead(auth, accountId);
+        return userAccountDao.findByAccountId(accountId);
     }
 
 }

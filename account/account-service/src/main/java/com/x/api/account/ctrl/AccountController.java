@@ -40,11 +40,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.x.api.account.dto.AccountDto;
+import com.x.api.account.dto.UserAccountDto;
 import com.x.api.account.model.Account;
+import com.x.api.account.model.UserAccount;
 import com.x.api.account.service.AccountService;
 import com.x.api.common.dto.CollectionResponse;
 import com.x.api.common.dto.CollectionResponseBuilder;
 import com.x.api.common.dto.GenericResponse;
+import com.x.api.common.helper.DateTimeHelper;
 import com.x.api.common.util.DtoUtil;
 import com.x.api.common.util.ValidationUtil;
 import com.x.api.common.validation.annotation.ValidLimit;
@@ -88,38 +91,38 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/{accountId:[\\d]+}", method = RequestMethod.GET)
-    @ApiOperation(value = "Get the account information by the specified accountId.", httpMethod = "GET",
-            produces = "application/json")
+    @ApiOperation(value = "Get the account information by the specified accountId.", httpMethod = "GET", produces = "application/json")
     public AccountDto getAccount(Authentication auth, @PathVariable("accountId") long accountId) {
         logger.info("GET /acct/accounts/{}, user: {}.", accountId, auth.getName());
         return DtoUtil.transform(AccountDto.class, accountService.getAccount(auth, accountId));
     }
 
+    @RequestMapping(value = "/{accountId:[\\d]+}/users", method = RequestMethod.GET)
+    @ApiOperation(value = "Get all the users who can operate the account with the specified accountId.", httpMethod = "GET", produces = "application/json")
+    public CollectionResponse<UserAccountDto> getUsersByAccount(Authentication auth, @PathVariable("accountId") long accountId) {
+        logger.info("GET /acct/accounts/{}/users, user: {}.", accountId, auth.getName());
+        List<UserAccount> list = accountService.getUsersByAccountId(auth, accountId);
+        return new CollectionResponse<>("user_accounts", null, DtoUtil.transformList(UserAccountDto.class, list, DateTimeHelper.DEFAULT_TIME_ZONE));
+    }
+
     @RequestMapping(value = "", method = RequestMethod.GET)
-    @ApiOperation(value = "Get all the accounts contains the specified name.", httpMethod = "GET",
-            produces = "application/json")
+    @ApiOperation(value = "Get all the accounts contains the specified name.", httpMethod = "GET", produces = "application/json")
     public CollectionResponse<AccountDto> getAccountsByName(Authentication auth,
             @RequestParam("name") @Size(min = 3, max = 126, message = MSG_NAME_LEN) String name,
             @RequestParam(name = "offset", defaultValue = "0") @ValidOffset int offset,
             @RequestParam(name = "limit", defaultValue = "100") @ValidLimit int limit,
-            @RequestParam(name = "sortBy",
-                    defaultValue = "accountId") @ValidSortBy(dto = AccountDto.class) String sortBy,
-            @RequestParam(name = "sortOrder", defaultValue = "asc") @ValidOrder String sortOrder,
-            HttpServletRequest request) {
-        List<AccountDto> list = accountService.getAccountsByName(auth, name, offset, limit + 1, sortBy, sortOrder)
-                .stream()
-                .map(a -> DtoUtil.transform(AccountDto.class, a))
-                .collect(Collectors.toList());
-        return CollectionResponseBuilder.withHttpServletRequest(request)
-                .withPageInfo(offset, limit, sortBy, sortOrder)
+            @RequestParam(name = "sortBy", defaultValue = "accountId") @ValidSortBy(dto = AccountDto.class) String sortBy,
+            @RequestParam(name = "sortOrder", defaultValue = "asc") @ValidOrder String sortOrder, HttpServletRequest request) {
+        List<AccountDto> list = accountService.getAccountsByName(auth, name, offset, limit + 1, sortBy, sortOrder).stream()
+                .map(a -> DtoUtil.transform(AccountDto.class, a)).collect(Collectors.toList());
+        return CollectionResponseBuilder.withHttpServletRequest(request).withPageInfo(offset, limit, sortBy, sortOrder)
                 .build("accounts", list);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST)
-    @ApiOperation(value = "Create new account.", httpMethod = "POST",
-            produces = "application/json")
+    @ApiOperation(value = "Create new account.", httpMethod = "POST", produces = "application/json")
     public AccountDto createAccount(Authentication auth,
-            @Validated(value = {Create.class, Default.class}) @RequestBody AccountDto req) {
+            @Validated(value = { Create.class, Default.class }) @RequestBody AccountDto req) {
         logger.info("POST /acct/accounts, user: {}.", auth.getName());
         req.setAccountId(null);
         Account account = DtoUtil.transform(Account.class, req);
@@ -128,8 +131,7 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/{accountId:[\\d]+}", method = RequestMethod.PUT)
-    @ApiOperation(value = "Update an account.", httpMethod = "PUT",
-            produces = "application/json")
+    @ApiOperation(value = "Update an account.", httpMethod = "PUT", produces = "application/json")
     public AccountDto updateAccount(Authentication auth, @PathVariable("accountId") long accountId,
             @Valid @RequestBody AccountDto req) {
         logger.info("PUT /acct/accounts/{}, user: {}.", accountId, auth.getName());
@@ -142,8 +144,7 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/{accountId:[\\d]+}", method = RequestMethod.DELETE)
-    @ApiOperation(value = "Delete an account.", httpMethod = "DELETE",
-            produces = "application/json")
+    @ApiOperation(value = "Delete an account.", httpMethod = "DELETE", produces = "application/json")
     public GenericResponse<String> deleteAccount(Authentication auth, @PathVariable("accountId") long accountId) {
         boolean deleted = accountService.deleteAccount(auth, accountId);
         if (deleted) {

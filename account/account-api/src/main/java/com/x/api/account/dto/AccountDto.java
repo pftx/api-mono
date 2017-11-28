@@ -1,5 +1,5 @@
 /**
- * AccountDetails.java
+ * AccountDto.java
  *
  * Copyright 2017 the original author or authors.
  *
@@ -49,7 +49,6 @@ public class AccountDto extends BaseDto implements Timezone {
 
     @MyNotNull(groups = Create.class)
     @Size(min = 4, max = 126, message = "The length of 'name' must in range [4, 126].")
-    @Pattern(regexp = "[\\w _\\-\\.'@]{4,126}", message = "The 'name' must be only character: [a-zA-Z_0-9 _-.'@].")
     private String name;
 
     @Size(min = 4, max = 255, message = "The length of 'description' must in range [4, 255].")
